@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050611">
+  <meta name="description" content="elgato.lol — Tu universo de servicios digitales.">
+  <title>elgato.lol — Servicios digitales</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <div class="stars"></div>
+
+  <header class="navbar glass">
+    <a href="#" class="brand">
+      <span class="cat-logo">♧</span>
+      <span>
+        <strong>elgato.lol</strong>
+        <small>Servicios digitales</small>
+      </span>
+    </a>
+
+    <nav>
+      <a class="active" href="#">Inicio</a>
+      <a href="#tienda">Tienda</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#soporte">Soporte</a>
+    </nav>
+
+    <button class="cart-button" id="cart-button">
+      <span>⌑</span> Carrito (<b id="cart-count">0</b>)
+    </button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">
+          <span>✦</span> BIENVENIDO A ELGATO.LOL
+        </div>
+
+        <h1>
+          Servicios digitales<br>
+          <span class="gradient-text">sin límites.</span>
+        </h1>
+
+        <p class="hero-description">
+          Aquí encuentras lo que necesitas: membresías,
+          herramientas y mucho más. Rápido, sencillo y
+          con una experiencia de otro universo.
+        </p>
+
+        <div class="features">
+          <span>ϟ Entrega automática*</span>
+          <span>◇ Pagos crypto*</span>
+          <span>♧ Compra segura</span>
+          <span>✦ Soporte</span>
+        </div>
+
+        <div class="hero-buttons">
+          <a class="button primary" href="#tienda">
+            Explorar tienda <span>→</span>
+          </a>
+          <a class="button ghost" href="#como-funciona">
+            <span>▷</span> Ver cómo funciona
+          </a>
+        </div>
+
+        <p class="micro-note">
+          *Funciones que conectaremos al configurar los pagos.
+        </p>
+      </div>
+
+      <div class="cat-scene" aria-label="Mascota de SrCat en el espacio">
+        <div class="planet planet-back"></div>
+        <div class="ring ring-one"></div>
+        <div class="ring ring-two"></div>
+        <div class="moon"></div>
+
+        <div class="astronaut">
+          <div class="ear ear-left"></div>
+          <div class="ear ear-right"></div>
+          <div class="cat-head">
+            <div class="helmet">
+              <div class="helmet-glare"></div>
+              <div class="eye eye-left"></div>
+              <div class="eye eye-right"></div>
+              <div class="nose"></div>
+              <div class="whiskers"></div>
+            </div>
+          </div>
+          <div class="cat-body">
+            <span class="suit-logo">♧</span>
+          </div>
+        </div>
+
+        <div class="signature">
+          <span>♛</span>
+          <strong>SrCat</strong>
+          <small>CREATOR OF THIS UNIVERSE</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-section" id="tienda">
+      <div class="store-main">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">SELECCIÓN EXCLUSIVA</div>
+            <h2>Productos destacados</h2>
+            <p>Los servicios más populares, en un solo lugar.</p>
+          </div>
+
+          <a href="#tienda" class="view-all">
+            Ver todo <span>→</span>
+          </a>
+        </div>
+
+        <div id="products" class="products">
+          <div class="loading">Explorando la galaxia...</div>
+        </div>
+      </div>
+
+      <aside class="crypto-panel glass">
+        <div class="eyebrow">PAGOS DIGITALES</div>
+        <h3>Paga con crypto</h3>
+        <p>Aceptación de criptomonedas pendiente de configuración.</p>
+
+        <div class="coins">
+          <div><span class="coin ltc">Ł</span><small>LTC</small></div>
+          <div><span class="coin btc">₿</span><small>BTC</small></div>
+          <div><span class="coin eth">◆</span><small>ETH</small></div>
+          <div><span class="coin usdt">₮</span><small>USDT</small></div>
+          <div><span class="coin more">+</span><small>Más</small></div>
+        </div>
+
+        <div class="delivery-note">
+          <span class="delivery-icon">ϟ</span>
+          <div>
+            <strong>Entrega automatizada</strong>
+            <p>Se habilitará tras verificar cada pago.</p>
+          </div>
+        </div>
+
+        <div class="space-art">
+          <div class="space-horizon"></div>
+          <div class="small-cat">♧</div>
+          <span>Dream<br>Build<br>Repeat.</span>
+          <small>— SrCat</small>
+        </div>
+      </aside>
+    </section>
+
+    <section class="how-section glass" id="como-funciona">
+      <div>
+        <div class="eyebrow">SIMPLE. DIGITAL. NOVA.</div>
+        <h2>Tu compra, en tres pasos.</h2>
+        <p>Una experiencia pensada para que comprar sea fácil.</p>
+      </div>
+
+      <div class="steps">
+        <div><b>01</b><strong>Elige</strong><span>Explora el catálogo.</span></div>
+        <div><b>02</b><strong>Paga</strong><span>Confirma tu pedido.</span></div>
+        <div><b>03</b><strong>Recibe</strong><span>Entrega tras verificar el pago.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="soporte">
+    <a href="#" class="brand">
+      <span class="cat-logo">♧</span>
+      <span><strong>elgato.lol</strong><small>Más que una tienda, un universo.</small></span>
+    </a>
+
+    <div class="footer-links">
+      <a href="#">Inicio</a>
+      <a href="#tienda">Tienda</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#soporte">Soporte</a>
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> elgato.lol<br>
+      Hecho con <span class="heart">♥</span> por SrCat
+    </div>
+  </footer>
+
+  <dialog id="order-dialog" class="order-dialog glass">
+    <form method="dialog" class="close-row">
+      <button aria-label="Cerrar">×</button>
+    </form>
+
+    <div class="eyebrow">NUEVO PEDIDO</div>
+    <h2 id="dialog-product">Tu producto</h2>
+    <p>Escribe tu correo para crear un pedido de prueba.</p>
+
+    <form id="order-form">
+      <label for="email">Correo electrónico</label>
+      <input id="email" type="email" placeholder="tu@correo.com" required>
+      <button class="button primary full" type="submit">
+        Crear pedido <span>→</span>
+      </button>
+    </form>
+
+    <div id="order-result" aria-live="polite"></div>
+    <small class="disclaimer">
+      Prototipo de prueba: todavía no procesa pagos reales.
+    </small>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
