@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda — elgato.lol</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body data-page="shop">
+  <div id="site-header"></div>
+  <main class="page-wrap">
+    <section class="page-banner">
+      <span class="eyebrow">CATÁLOGO DIGITAL</span>
+      <h1>Explora el <span>universo.</span></h1>
+      <p>Busca, filtra y descubre productos disponibles en el catálogo.</p>
+    </section>
+
+    <section class="catalog">
+      <div class="catalog-toolbar">
+        <label class="search-box">
+          <span class="search-mark">⌕</span>
+          <input id="product-search" type="search" placeholder="Buscar productos..." aria-label="Buscar productos">
+        </label>
+        <select id="category-filter" aria-label="Filtrar por categoría">
+          <option value="all">Todas las categorías</option>
+          <option value="Entretenimiento">Entretenimiento</option>
+          <option value="Gaming">Gaming</option>
+          <option value="Productividad">Productividad</option>
+        </select>
+        <select id="sort-products" aria-label="Ordenar productos">
+          <option value="featured">Destacados</option>
+          <option value="price-low">Menor precio</option>
+          <option value="price-high">Mayor precio</option>
+          <option value="name">Nombre A-Z</option>
+        </select>
+      </div>
+      <div id="shop-products" class="product-grid catalog-grid">
+        <div class="loading">Cargando catálogo...</div>
+      </div>
+      <p id="catalog-count" class="catalog-count"></p>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
