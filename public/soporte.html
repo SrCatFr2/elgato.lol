@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soporte — elgato.lol</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body data-page="support">
+  <div id="site-header"></div>
+  <main class="page-wrap">
+    <section class="page-banner">
+      <span class="eyebrow">ESTAMOS PARA AYUDAR</span>
+      <h1>Hablemos, <span>sin vueltas.</span></h1>
+      <p>Cuéntanos qué necesitas. El formulario de esta versión es una demostración local.</p>
+    </section>
+
+    <section class="support-layout">
+      <div class="panel support-info">
+        <span class="support-icon"><svg class="icon"><use href="#i-headset"/></svg></span>
+        <h2>Soporte de elgato.lol</h2>
+        <p>Para preguntas sobre pedidos, productos o el funcionamiento de la tienda, prepara tu número de pedido y una descripción clara del problema.</p>
+        <div class="panel-callout"><svg class="icon"><use href="#i-shield"/></svg><div><strong>Protege tus datos</strong><p>No compartas contraseñas ni códigos de acceso.</p></div></div>
+      </div>
+
+      <form id="support-form" class="panel support-form">
+        <label for="support-name">Nombre</label>
+        <input id="support-name" name="name" maxlength="80" required placeholder="Tu nombre">
+
+        <label for="support-email">Correo electrónico</label>
+        <input id="support-email" name="email" type="email" maxlength="160" required placeholder="tu@correo.com">
+
+        <label for="support-topic">Motivo</label>
+        <select id="support-topic" name="topic">
+          <option>Consulta general</option>
+          <option>Pedido</option>
+          <option>Producto</option>
+          <option>Problema técnico</option>
+        </select>
+
+        <label for="support-message">Mensaje</label>
+        <textarea id="support-message" name="message" rows="5" maxlength="2000" required placeholder="Describe cómo podemos ayudarte..."></textarea>
+
+        <button class="button primary full" type="submit">Preparar mensaje <span>→</span></button>
+        <p class="form-note">Todavía no se envía a ningún servidor; el formulario mostrará el mensaje preparado en pantalla.</p>
+        <div id="support-result" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
