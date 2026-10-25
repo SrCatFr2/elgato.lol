@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carrito — elgato.lol</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body data-page="cart">
+  <div id="site-header"></div>
+  <main class="page-wrap">
+    <section class="page-banner compact-banner">
+      <span class="eyebrow">TU SELECCIÓN</span>
+      <h1>Tu <span>carrito.</span></h1>
+      <p>Revisa los productos antes de crear tu pedido.</p>
+    </section>
+    <section class="cart-layout">
+      <div id="cart-items" class="cart-items panel"></div>
+      <aside class="cart-summary panel">
+        <span class="eyebrow">RESUMEN</span>
+        <h2>Tu pedido</h2>
+        <div class="summary-line"><span>Productos</span><strong id="cart-subtotal">$0 MXN</strong></div>
+        <div class="summary-line"><span>Entrega</span><strong>Por confirmar</strong></div>
+        <div class="summary-total"><span>Total estimado</span><strong id="cart-total">$0 MXN</strong></div>
+        <form id="checkout-form">
+          <label for="checkout-email">Correo electrónico</label>
+          <input id="checkout-email" type="email" placeholder="tu@correo.com" required>
+          <button class="button primary full" type="submit">Crear pedido de prueba <span>→</span></button>
+        </form>
+        <p class="form-note">Esta versión no procesa pagos. Crear un pedido no significa que se haya realizado un cobro.</p>
+        <div id="checkout-result" aria-live="polite"></div>
+      </aside>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
