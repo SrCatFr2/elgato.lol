@@ -1,194 +1,162 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101116">
-  <meta name="description" content="Tus servicios digitales, en un solo lugar. Descubre la tienda de elgato.lol.">
-  <title>elgato.lol — Tu espacio digital</title>
-  <link rel="preload" as="image" href="/assets/space-hero.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090910">
+  <meta name="description" content="ElGato: productos digitales, cuentas y servicios en un solo lugar.">
+
+  <title>ElGato — Tu tienda digital</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Conserva los estilos compartidos de las demás páginas -->
   <link rel="stylesheet" href="/styles.css">
-  <script src="/app.js" defer></script>
+
+  <!-- Estilos exclusivos de la portada -->
+  <link rel="stylesheet" href="/home.css">
 </head>
 
-<body data-page="home">
-  <div class="site-shell">
-    <header class="site-header" id="site-header">
-      <a class="brand" href="/" aria-label="elgato.lol, inicio">
-        <span class="brand-mark">
-          <img src="/assets/srcat-astronaut.png" alt="" onerror="this.style.display='none'">
-        </span>
-        <span class="brand-name">elgato<span>.lol</span></span>
-      </a>
+<body data-page="home" class="home-page">
 
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a class="nav-link active" href="/">Inicio</a>
-        <a class="nav-link" href="/tienda.html">Tienda</a>
-        <a class="nav-link" href="/como-funciona.html">Cómo funciona</a>
-        <a class="nav-link" href="/soporte.html">Soporte</a>
-      </nav>
+  <header class="home-header">
+    <a class="home-brand" href="/" aria-label="ElGato, inicio">
+      <span class="home-brand-icon">g.</span>
+      <span>elgato<span class="home-brand-dot">.lol</span></span>
+    </a>
 
-      <a class="header-cart" href="/carrito.html" aria-label="Ver carrito">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="9.5" cy="19" r="1.2" fill="currentColor"/>
-          <circle cx="17.5" cy="19" r="1.2" fill="currentColor"/>
-        </svg>
-        <span>Carrito</span>
-      </a>
-    </header>
+    <nav class="home-nav" aria-label="Navegación principal">
+      <a class="home-nav-active" href="/">Inicio</a>
+      <a href="/tienda.html">Tienda</a>
+      <a href="/como-funciona.html">Cómo funciona</a>
+      <a href="/soporte.html">Soporte</a>
+    </nav>
 
-    <main>
-      <section class="hero">
-        <div class="hero-backdrop" aria-hidden="true"></div>
-        <div class="hero-shade" aria-hidden="true"></div>
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="status-dot"></span> TU RINCÓN DIGITAL</p>
+    <a class="home-cart" href="/carrito.html">
+      <span aria-hidden="true">↗</span> Mi carrito
+    </a>
+  </header>
 
-          <h1>Lo que buscas.<br><span>Sin tantas vueltas.</span></h1>
+  <main>
+    <section class="home-hero">
+      <div class="home-hero-image" aria-hidden="true"></div>
+      <div class="home-hero-shade" aria-hidden="true"></div>
 
-          <p class="hero-description">
-            Servicios digitales seleccionados, precios claros y una experiencia
-            sencilla desde que llegas hasta que haces tu pedido.
-          </p>
-
-          <div class="hero-actions">
-            <a class="button button-light" href="/tienda.html">
-              Explorar la tienda
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
-            <a class="text-link" href="/como-funciona.html">¿Cómo funciona?</a>
-          </div>
-
-          <div class="hero-footnote">
-            <span class="footnote-line"></span>
-            <span>Un sitio hecho para ir directo al punto.</span>
-          </div>
+      <div class="home-hero-content">
+        <div class="home-eyebrow">
+          <span class="home-status-dot"></span>
+          TU ESPACIO DIGITAL
         </div>
 
-        <div class="hero-character" aria-hidden="true">
-          <img
-            src="/assets/srcat-astronaut.png"
-            alt=""
-            fetchpriority="high"
-            onerror="this.closest('.hero-character').classList.add('image-missing')"
-          >
-        </div>
+        <h1>Lo digital,<br>sin tantas <span>vueltas.</span></h1>
 
-        <div class="hero-index" aria-hidden="true">
-          <span>SC / 001</span>
-          <span>ELGATO.LOL</span>
-        </div>
-      </section>
-
-      <section class="trust-strip" aria-label="Información de la tienda">
-        <div class="trust-item">
-          <span class="trust-number">01</span>
-          <div>
-            <strong>Todo en un lugar</strong>
-            <p>Encuentra lo que necesitas sin perderte.</p>
-          </div>
-        </div>
-        <div class="trust-item">
-          <span class="trust-number">02</span>
-          <div>
-            <strong>Precios a la vista</strong>
-            <p>Consulta los detalles antes de pedir.</p>
-          </div>
-        </div>
-        <div class="trust-item">
-          <span class="trust-number">03</span>
-          <div>
-            <strong>Ayuda cuando la necesitas</strong>
-            <p>Consulta la página de soporte.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="featured-section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow section-eyebrow">EMPIEZA POR AQUÍ</p>
-            <h2>Explora la tienda<span class="heading-period">.</span></h2>
-          </div>
-          <a class="section-link" href="/tienda.html">
-            Ver todos los productos
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-
-        <div class="category-grid">
-          <a class="category-card category-spotify" href="/tienda.html">
-            <div class="category-image">
-              <img src="/assets/spotify.jpg" alt="" loading="lazy">
-            </div>
-            <div class="category-info">
-              <span class="category-kicker">01 / MÚSICA</span>
-              <h3>Tu música, a tu manera.</h3>
-              <span class="category-cta">Explorar <span aria-hidden="true">↗</span></span>
-            </div>
-          </a>
-
-          <a class="category-card category-streaming" href="/tienda.html">
-            <div class="category-image">
-              <img src="/assets/netflix.jpg" alt="" loading="lazy">
-            </div>
-            <div class="category-info">
-              <span class="category-kicker">02 / ENTRETENIMIENTO</span>
-              <h3>Algo bueno para ver.</h3>
-              <span class="category-cta">Explorar <span aria-hidden="true">↗</span></span>
-            </div>
-          </a>
-
-          <a class="category-card category-tools" href="/tienda.html">
-            <div class="category-image">
-              <img src="/assets/chatgpt.jpg" alt="" loading="lazy">
-            </div>
-            <div class="category-info">
-              <span class="category-kicker">03 / HERRAMIENTAS</span>
-              <h3>Ideas que toman forma.</h3>
-              <span class="category-cta">Explorar <span aria-hidden="true">↗</span></span>
-            </div>
-          </a>
-        </div>
-
-        <p class="catalog-note">
-          La disponibilidad, las condiciones y el precio de cada producto se muestran
-          en su ficha. Revisa los detalles antes de realizar un pedido.
+        <p>
+          Encuentra tus servicios digitales favoritos en un solo lugar.
+          Explora el catálogo y encuentra lo que buscas.
         </p>
-      </section>
 
-      <section class="closing-banner">
-        <div>
-          <p class="eyebrow">¿LISTO PARA EMPEZAR?</p>
-          <h2>Encuentra tu siguiente favorito.</h2>
+        <div class="home-hero-actions">
+          <a class="home-button home-button-primary" href="/tienda.html">
+            Explorar tienda <span aria-hidden="true">↗</span>
+          </a>
+          <a class="home-button home-button-secondary" href="/como-funciona.html">
+            Cómo funciona
+          </a>
         </div>
-        <a class="button button-outline" href="/tienda.html">
-          Ir a la tienda
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-      </section>
-    </main>
 
-    <footer class="site-footer" id="site-footer">
-      <a class="footer-brand" href="/">elgato<span>.lol</span></a>
-      <p>Un pequeño universo digital.</p>
-      <div class="footer-links">
-        <a href="/tienda.html">Tienda</a>
-        <a href="/como-funciona.html">Cómo funciona</a>
-        <a href="/soporte.html">Soporte</a>
+        <div class="home-hero-note">
+          <span>✳</span> Un catálogo sencillo, a tu manera.
+        </div>
       </div>
-      <span class="copyright">© <span id="year"></span> elgato.lol</span>
-    </footer>
-  </div>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+      <img
+        class="home-astronaut"
+        src="/assets/srcat-astronaut.png"
+        alt=""
+        fetchpriority="high"
+      >
+
+      <div class="home-orbit-label">
+        <span>ELGATO.LOL</span>
+        <span>— EXPLORA MÁS ALLÁ —</span>
+      </div>
+    </section>
+
+    <section class="home-catalog">
+      <div class="home-section-heading">
+        <div>
+          <span class="home-kicker">EL CATÁLOGO</span>
+          <h2>¿Qué estás buscando?</h2>
+          <p>Algunas categorías para empezar a explorar.</p>
+        </div>
+
+        <a class="home-text-link" href="/tienda.html">
+          Ver toda la tienda <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="home-category-grid">
+        <a class="home-category-card home-card-spotify" href="/tienda.html">
+          <img src="/assets/spotify.jpg" alt="" loading="lazy">
+          <div class="home-card-overlay"></div>
+          <div class="home-card-content">
+            <span class="home-card-label">MÚSICA</span>
+            <h3>Spotify</h3>
+            <span class="home-card-arrow">↗</span>
+          </div>
+        </a>
+
+        <a class="home-category-card home-card-netflix" href="/tienda.html">
+          <img src="/assets/netflix.jpg" alt="" loading="lazy">
+          <div class="home-card-overlay"></div>
+          <div class="home-card-content">
+            <span class="home-card-label">ENTRETENIMIENTO</span>
+            <h3>Netflix</h3>
+            <span class="home-card-arrow">↗</span>
+          </div>
+        </a>
+
+        <a class="home-category-card home-card-chatgpt" href="/tienda.html">
+          <img src="/assets/chatgpt.jpg" alt="" loading="lazy">
+          <div class="home-card-overlay"></div>
+          <div class="home-card-content">
+            <span class="home-card-label">PRODUCTIVIDAD</span>
+            <h3>ChatGPT</h3>
+            <span class="home-card-arrow">↗</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="home-bottom-banner">
+      <div>
+        <span class="home-kicker">¿PRIMERA VEZ POR AQUÍ?</span>
+        <h2>Empieza por lo sencillo.</h2>
+        <p>Consulta cómo funciona la tienda antes de realizar tu pedido.</p>
+      </div>
+      <a class="home-button home-button-primary" href="/como-funciona.html">
+        Conocer más <span aria-hidden="true">→</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="home-footer">
+    <a class="home-brand" href="/">
+      <span class="home-brand-icon">g.</span>
+      <span>elgato<span class="home-brand-dot">.lol</span></span>
+    </a>
+    <p>Tu espacio digital.</p>
+    <div class="home-footer-links">
+      <a href="/tienda.html">Tienda</a>
+      <a href="/soporte.html">Soporte</a>
+      <span>© ElGato</span>
+    </div>
+  </footer>
+
+  <!-- Se conserva por compatibilidad con el proyecto actual -->
+  <script src="/app.js" defer></script>
 </body>
 </html>
