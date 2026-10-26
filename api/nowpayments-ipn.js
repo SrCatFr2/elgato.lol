@@ -1,4 +1,6 @@
 
+"use strict";
+
 const crypto = require("node:crypto");
 const { ObjectId } = require("mongodb");
 const { getMongo } = require("../lib/mongodb");
@@ -17,12 +19,12 @@ function sortObject(value) {
   return value;
 }
 
-function verifySignature(payload, receivedSignature, secret) {
+function verifySignature(payload, signature, secret) {
   if (
     !payload ||
     typeof payload !== "object" ||
-    typeof receivedSignature !== "string" ||
-    !/^[a-f0-9]{128}$/i.test(receivedSignature) ||
+    typeof signature !== "string" ||
+    !/^[a-f0-9]{128}$/i.test(signature) ||
     !secret
   ) {
     return false;
@@ -33,10 +35,20 @@ function verifySignature(payload, receivedSignature, secret) {
     .update(JSON.stringify(sortObject(payload)))
     .digest();
 
-  const received = Buffer.from(receivedSignature, "hex");
+  const received = Buffer.from(signature, "hex");
 
   return expected.length === received.length &&
     crypto.timingSafeEqual(expected, received);
+}
+
+function toCents(value) {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount) || amount < 0) {
+    return NaN;
+  }
+
+  return Math.round(amount * 100);
 }
 
 module.exports = async (req, res) => {
@@ -60,14 +72,13 @@ module.exports = async (req, res) => {
       return res.status(401).json({ error: "Firma IPN inválida." });
     }
 
-    const orderId = payload.order_id;
+    const orderId = String(payload.order_id || "");
 
-    if (
-      typeof orderId !== "string" ||
-      !/^[a-f0-9]{24}$/i.test(orderId)
-    ) {
-      // No es un pedido reconocible de nuestra tienda.
-      return res.status(200).json({ received: true, ignored: true });
+    if (!/^[a-f0-9]{24}$/i.test(orderId)) {
+      return res.status(200).json({
+        received: true,
+        ignored: true
+      });
     }
 
     const { client, db } = await getMongo();
@@ -76,18 +87,42 @@ module.exports = async (req, res) => {
     const order = await orders.findOne({ _id: id });
 
     if (!order) {
-      return res.status(200).json({ received: true, unmatched: true });
+      return res.status(200).json({
+        received: true,
+        unmatched: true
+      });
     }
 
-    const paymentStatus = String(payload.payment_status || "").toLowerCase();
+    // Si el callback incluye invoice_id, debe coincidir con la factura creada.
+    if (
+      payload.invoice_id !== undefined &&
+      String(payload.invoice_id) !== String(order.invoiceId)
+    ) {
+      console.error("Invoice ID no coincide:", orderId);
+      return res.status(400).json({
+        error: "Factura no coincidente."
+      });
+    }
 
-    // No entregar nada por "waiting", "confirming" o "partially_paid".
+    const paymentStatus = String(
+      payload.payment_status || ""
+    ).toLowerCase();
+
     if (paymentStatus !== "finished") {
+      const mappedStatus = {
+        expired: "expired",
+        failed: "failed",
+        refunded: "refunded",
+        partially_paid: "partially_paid"
+      }[paymentStatus] || "pending_payment";
+
+      // Un aviso atrasado nunca debe degradar un pedido ya pagado.
       if (order.status !== "paid") {
         await orders.updateOne(
           { _id: id, status: { $ne: "paid" } },
           {
             $set: {
+              status: mappedStatus,
               paymentStatus,
               updatedAt: new Date()
             }
@@ -101,23 +136,19 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Comprobaciones adicionales si el IPN incluye el importe y moneda fiat.
+    // No aceptes un pago completado sin importe y moneda verificables.
     if (
-      payload.price_amount !== undefined &&
-      Math.round(Number(payload.price_amount) * 100) !== order.totalMXN * 100
+      payload.price_amount === undefined ||
+      typeof payload.price_currency !== "string" ||
+      payload.price_currency.toLowerCase() !== "mxn" ||
+      toCents(payload.price_amount) !== Number(order.totalMXN) * 100
     ) {
-      console.error("Importe IPN no coincide con el pedido", orderId);
-      return res.status(400).json({ error: "Importe no coincidente." });
+      console.error("Importe o moneda no coinciden:", orderId);
+      return res.status(400).json({
+        error: "Importe o moneda no coinciden."
+      });
     }
 
-    if (
-      payload.price_currency !== undefined &&
-      String(payload.price_currency).toLowerCase() !== "mxn"
-    ) {
-      return res.status(400).json({ error: "Moneda no coincidente." });
-    }
-
-    // Idempotente: repetir la notificación no genera otro pedido.
     await orders.updateOne(
       { _id: id, status: { $ne: "paid" } },
       {
@@ -127,19 +158,14 @@ module.exports = async (req, res) => {
           paymentId: payload.payment_id
             ? String(payload.payment_id)
             : null,
-          paidAt: new Date(),
+          paidAt: order.paidAt || new Date(),
           updatedAt: new Date()
         }
       }
     );
 
-    const latest = await orders.findOne({ _id: id });
-
-    if (latest.status !== "paid") {
-      return res.status(409).json({ error: "No se pudo confirmar el pedido." });
-    }
-
-    // Si no hay inventario, la función lo marca para entrega manual.
+    // La entrega es idempotente: las notificaciones repetidas no
+    // deben volver a asignar códigos que ya se entregaron.
     const delivery = await fulfillOrder(client, db, id);
 
     return res.status(200).json({
