@@ -331,6 +331,11 @@ function renderProductDetail() {
   bindAddButtons(target);
 }
 
+
+       
+    
+ 
+ 
 function renderCart() {
   const target = $("#cart-items");
   if (!target) return;
@@ -362,25 +367,46 @@ function renderCart() {
               ${escapeHtml(item.product.name)}
             </a>
           </h3>
+
           <p>${money(item.product.price)} MXN por unidad</p>
 
           <div class="quantity-control">
-            <button type="button" data-quantity="${escapeHtml(item.id)}" data-change="-1" aria-label="Restar una unidad">−</button>
+            <button
+              type="button"
+              data-quantity="${escapeHtml(item.id)}"
+              data-change="-1"
+              aria-label="Restar una unidad"
+            >−</button>
+
             <span>${item.quantity}</span>
-            <button type="button" data-quantity="${escapeHtml(item.id)}" data-change="1" aria-label="Añadir una unidad">+</button>
-            <button type="button" class="remove-button" data-remove="${escapeHtml(item.id)}">Quitar</button>
+
+            <button
+              type="button"
+              data-quantity="${escapeHtml(item.id)}"
+              data-change="1"
+              aria-label="Añadir una unidad"
+            >+</button>
+
+            <button
+              type="button"
+              class="remove-button"
+              data-remove="${escapeHtml(item.id)}"
+            >Quitar</button>
           </div>
         </div>
 
         <div class="cart-line-total">
-          ${money(item.product.price * item.quantity)}<br><small>MXN</small>
+          ${money(item.product.price * item.quantity)}
+          <br><small>MXN</small>
         </div>
-      </article>`).join("")
-      : `<div class="empty-state">
-          <h2>Tu carrito está vacío</h2>
-          <p>Explora la tienda para añadir productos.</p>
-          <a class="button primary" href="/tienda.html">Ir a la tienda</a>
-        </div>`;
+      </article>
+    `).join("") : `
+      <div class="empty-state">
+        <h2>Tu carrito está vacío</h2>
+        <p>Explora la tienda para añadir productos.</p>
+        <a class="button primary" href="/tienda.html">Ir a la tienda</a>
+      </div>
+    `;
 
     $("#cart-subtotal").textContent = `${money(total)} MXN`;
     $("#cart-total").textContent = `${money(total)} MXN`;
@@ -403,7 +429,9 @@ function renderCart() {
 
     $$("[data-remove]", target).forEach(button => {
       button.addEventListener("click", () => {
-        saveCart(getCart().filter(item => item.id !== button.dataset.remove));
+        saveCart(
+          getCart().filter(item => item.id !== button.dataset.remove)
+        );
         update();
       });
     });
@@ -416,41 +444,59 @@ function renderCart() {
   form?.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const email = $("#checkout-email").value.trim();
     const result = $("#checkout-result");
     const button = $('button[type="submit"]', form);
-    const currentCart = getCart();
+    const items = getCart();
 
-    if (!currentCart.length) {
-      result.textContent = "Añade al menos un producto antes de crear el pedido.";
+    if (!items.length) {
+      result.textContent = "Añade productos antes de pagar.";
       return;
     }
 
     button.disabled = true;
-    button.textContent = "Creando pedido...";
+    button.textContent = "Preparando factura...";
     result.textContent = "";
 
     try {
       const response = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, items: currentCart })
+        body: JSON.stringify({
+          items: items.map(item => ({
+            id: item.id,
+            quantity: item.quantity
+          }))
+        })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "No se pudo crear el pedido.");
+        throw new Error(data.error || "No se pudo crear la factura.");
       }
 
-      result.textContent =
-        `Pedido de prueba: ${data.orderId}. Total estimado: ${money(data.total)} MXN. ` +
-        "No se ha realizado ningún cobro.";
+      if (typeof data.checkoutUrl !== "string") {
+        throw new Error("No se recibió un enlace de pago válido.");
+      }
+
+      const checkoutUrl = new URL(data.checkoutUrl);
+
+      if (checkoutUrl.protocol !== "https:") {
+        throw new Error("El enlace de pago no es seguro.");
+      }
+
+      // Vacía el carrito solo cuando el cliente va al checkout.
+      // El pedido ya está guardado en MongoDB.
+      localStorage.removeItem(CART_KEY);
+      updateCartCount();
+
+      window.location.assign(checkoutUrl.toString());
     } catch (error) {
-      result.textContent = error.message || "No se pudo conectar con el servidor.";
-    } finally {
+      result.textContent =
+        error.message || "No se pudo conectar con el pago.";
+
       button.disabled = false;
-      button.textContent = "Crear pedido de prueba →";
+      button.textContent = "Pagar con criptomonedas →";
     }
   });
 }
