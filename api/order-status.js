@@ -17,7 +17,6 @@ module.exports = async (req, res) => {
       req.url,
       process.env.SITE_URL || "https://elgato.lol"
     );
-
     const token = url.searchParams.get("token") || "";
 
     if (!/^[a-f0-9]{64}$/.test(token)) {
@@ -38,7 +37,7 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
 
-    // Permite terminar una entrega pendiente cuando se repone el inventario.
+    // Reintenta entregar si el pago está confirmado y se repuso el stock.
     if (
       order.status === "paid" &&
       order.deliveryStatus !== "delivered"
@@ -54,14 +53,14 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       status: order.status,
+      paymentStatus: order.paymentStatus,
       deliveryStatus: order.deliveryStatus,
       currency: order.currency,
       total: order.totalMXN,
       items: order.items.map(item => ({
         id: item.id,
         name: item.name,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice
+        quantity: item.quantity
       })),
       deliveredItems: canDeliver ? order.deliveredItems : null
     });
