@@ -333,9 +333,7 @@ function renderProductDetail() {
 
 
        
-    
- 
- 
+
 function renderCart() {
   const target = $("#cart-items");
   if (!target) return;
@@ -371,27 +369,21 @@ function renderCart() {
           <p>${money(item.product.price)} MXN por unidad</p>
 
           <div class="quantity-control">
-            <button
-              type="button"
+            <button type="button"
               data-quantity="${escapeHtml(item.id)}"
               data-change="-1"
-              aria-label="Restar una unidad"
-            >−</button>
+              aria-label="Restar una unidad">−</button>
 
             <span>${item.quantity}</span>
 
-            <button
-              type="button"
+            <button type="button"
               data-quantity="${escapeHtml(item.id)}"
               data-change="1"
-              aria-label="Añadir una unidad"
-            >+</button>
+              aria-label="Añadir una unidad">+</button>
 
-            <button
-              type="button"
+            <button type="button"
               class="remove-button"
-              data-remove="${escapeHtml(item.id)}"
-            >Quitar</button>
+              data-remove="${escapeHtml(item.id)}">Quitar</button>
           </div>
         </div>
 
@@ -446,15 +438,15 @@ function renderCart() {
 
     const result = $("#checkout-result");
     const button = $('button[type="submit"]', form);
-    const items = getCart();
+    const currentCart = getCart();
 
-    if (!items.length) {
+    if (!currentCart.length) {
       result.textContent = "Añade productos antes de pagar.";
       return;
     }
 
     button.disabled = true;
-    button.textContent = "Preparando factura...";
+    button.textContent = "Creando factura...";
     result.textContent = "";
 
     try {
@@ -462,7 +454,7 @@ function renderCart() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map(item => ({
+          items: currentCart.map(item => ({
             id: item.id,
             quantity: item.quantity
           }))
@@ -476,30 +468,37 @@ function renderCart() {
       }
 
       if (typeof data.checkoutUrl !== "string") {
-        throw new Error("No se recibió un enlace de pago válido.");
+        throw new Error("NOWPayments no devolvió el enlace de pago.");
       }
 
-      const checkoutUrl = new URL(data.checkoutUrl);
+      const checkout = new URL(data.checkoutUrl);
 
-      if (checkoutUrl.protocol !== "https:") {
-        throw new Error("El enlace de pago no es seguro.");
+      if (
+        checkout.protocol !== "https:" ||
+        !(
+          checkout.hostname === "nowpayments.io" ||
+          checkout.hostname.endsWith(".nowpayments.io")
+        )
+      ) {
+        throw new Error("El enlace de pago no es válido.");
       }
 
-      // Vacía el carrito solo cuando el cliente va al checkout.
       // El pedido ya está guardado en MongoDB.
       localStorage.removeItem(CART_KEY);
       updateCartCount();
-
-      window.location.assign(checkoutUrl.toString());
+      window.location.assign(checkout.toString());
     } catch (error) {
       result.textContent =
-        error.message || "No se pudo conectar con el pago.";
+        error.message || "No se pudo conectar con el procesador.";
 
       button.disabled = false;
       button.textContent = "Pagar con criptomonedas →";
     }
   });
 }
+    
+ 
+ 
 
 function setupSupportForm() {
   const form = $("#support-form");
