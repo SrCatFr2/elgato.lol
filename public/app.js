@@ -1,29 +1,19 @@
 
+"use strict";
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-const page = document.body.dataset.page || "home";
 const CART_KEY = "elgato_cart_v2";
+const page = document.body?.dataset?.page || "home";
 
 let allProducts = [];
-
-const icon = (name, extraClass = "") =>
-  `<svg class="icon ${extraClass}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
-
-const symbols = `
-<svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <symbol id="i-cat" viewBox="0 0 24 24"><path d="M5 10 4 3l6 4h4l6-4-1 7a8 8 0 1 1-14 0Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h.01M15 12h.01M10 16q2 2 4 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
-  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M17 19h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-3Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8.5 12 2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
-  <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 12h3v7H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 1-2Zm16 0h-3v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-1-2ZM17 19q-1 2-5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-</svg>`;
-
-document.body.insertAdjacentHTML("afterbegin", symbols);
+let catalogLoaded = false;
+let catalogError = null;
+let toastTimer = null;
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -33,41 +23,91 @@ function escapeHtml(value) {
 }
 
 function money(value, currency = "MXN") {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 2
-  }).format(value);
+  const amount = Number(value);
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
+
+  try {
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: /^[A-Z]{3}$/.test(currency || "")
+        ? currency
+        : "MXN",
+      maximumFractionDigits: 2
+    }).format(safeAmount);
+  } catch {
+    return `$${safeAmount.toFixed(2)} MXN`;
+  }
+}
+
+function normalizeProduct(product) {
+  const item = product && typeof product === "object" ? product : {};
+
+  return {
+    id: String(item.id ?? ""),
+    name: String(item.name ?? "Producto digital"),
+    category: String(item.category ?? "Digital"),
+    price: Number.isFinite(Number(item.price)) ? Number(item.price) : 0,
+    currency: String(item.currency ?? "MXN"),
+    image: typeof item.image === "string" ? item.image : "",
+    badge: typeof item.badge === "string" ? item.badge : "",
+    short: String(item.short ?? item.description ?? ""),
+    description: String(item.description ?? item.short ?? "Producto digital."),
+    features: Array.isArray(item.features)
+      ? item.features.filter(feature => typeof feature === "string")
+      : []
+  };
 }
 
 function getCart() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    const raw = localStorage.getItem(CART_KEY);
+    const parsed = JSON.parse(raw || "[]");
+
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(item =>
-      typeof item.id === "string" &&
-      Number.isInteger(item.quantity) &&
-      item.quantity >= 1 &&
-      item.quantity <= 10
-    );
+
+    const clean = [];
+    const seen = new Set();
+
+    for (const item of parsed) {
+      if (
+        !item ||
+        typeof item.id !== "string" ||
+        !Number.isInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > 10 ||
+        seen.has(item.id)
+      ) {
+        continue;
+      }
+
+      seen.add(item.id);
+      clean.push({ id: item.id, quantity: item.quantity });
+    }
+
+    return clean;
   } catch {
     return [];
   }
 }
 
 function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  try {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  } catch {
+    showToast("No se pudo guardar el carrito en este navegador.");
+  }
+
   updateCartCount();
 }
 
 function updateCartCount() {
   const count = getCart().reduce((sum, item) => sum + item.quantity, 0);
-  $$(".cart-count").forEach(element => {
+
+  // Compatible con el header de la página de inicio y el header global.
+  $$("#cart-count, .cart-count").forEach(element => {
     element.textContent = String(count);
   });
 }
-
-let toastTimer;
 
 function showToast(message) {
   let toast = $("#toast");
@@ -85,12 +125,18 @@ function showToast(message) {
   toast.classList.add("show");
 
   window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2500);
+  toastTimer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2400);
 }
 
 function addToCart(productId) {
   const product = allProducts.find(item => item.id === productId);
-  if (!product) return;
+
+  if (!product) {
+    showToast("No encontramos ese producto en el catálogo.");
+    return;
+  }
 
   const cart = getCart();
   const existing = cart.find(item => item.id === productId);
@@ -100,7 +146,8 @@ function addToCart(productId) {
       showToast("El límite es de 10 unidades por producto.");
       return;
     }
-    existing.quantity++;
+
+    existing.quantity += 1;
   } else {
     cart.push({ id: productId, quantity: 1 });
   }
@@ -109,6 +156,18 @@ function addToCart(productId) {
   showToast(`${product.name} se añadió al carrito.`);
 }
 
+function bindAddButtons(root = document) {
+  $$("[data-add]", root).forEach(button => {
+    if (button.dataset.addBound === "true") return;
+
+    button.dataset.addBound = "true";
+    button.addEventListener("click", () => {
+      addToCart(button.dataset.add);
+    });
+  });
+}
+
+/* Header: solo se genera cuando la página incluye #site-header. */
 function renderHeader() {
   const target = $("#site-header");
   if (!target) return;
@@ -123,7 +182,7 @@ function renderHeader() {
   target.innerHTML = `
     <header class="navbar">
       <a href="/" class="brand" aria-label="elgato.lol, inicio">
-        <span class="brand-mark">${icon("cat")}</span>
+        <span class="brand-mark" aria-hidden="true">✦</span>
         <span>
           <span class="brand-name">elgato.lol</span>
           <span class="brand-sub">Servicios digitales</span>
@@ -131,15 +190,20 @@ function renderHeader() {
       </a>
 
       <nav class="nav-links" aria-label="Navegación principal">
-        ${links.map(([url, label, key]) =>
-          `<a href="${url}" class="${page === key ? "active" : ""}">${label}</a>`
-        ).join("")}
+        ${links.map(([url, label, key]) => `
+          <a href="${url}" class="${page === key ? "active" : ""}">
+            ${label}
+          </a>
+        `).join("")}
       </nav>
 
       <a class="header-cart" href="/carrito.html">
-        ${icon("cart")} Carrito (<span class="cart-count">0</span>)
+        Carrito (<span class="cart-count">0</span>)
       </a>
-    </header>`;
+    </header>
+  `;
+
+  updateCartCount();
 }
 
 function renderFooter() {
@@ -150,10 +214,10 @@ function renderFooter() {
     <footer class="site-footer">
       <div class="footer-inner">
         <a href="/" class="brand">
-          <span class="brand-mark">${icon("cat")}</span>
+          <span class="brand-mark" aria-hidden="true">✦</span>
           <span>
             <span class="brand-name">elgato.lol</span>
-            <span class="brand-sub">Más que una tienda, un universo.</span>
+            <span class="brand-sub">Tu espacio digital</span>
           </span>
         </a>
 
@@ -165,59 +229,101 @@ function renderFooter() {
         </nav>
 
         <div class="footer-copy">
-          © ${new Date().getFullYear()} elgato.lol<br>
-          Hecho con <strong>cuidado por SrCat</strong>
+          © ${new Date().getFullYear()} elgato.lol
         </div>
       </div>
-    </footer>`;
+    </footer>
+  `;
 }
 
-function productCard(product) {
+function renderEmptyState(title, message) {
+  return `
+    <div class="empty-state">
+      <h2>${escapeHtml(title)}</h2>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
+function renderProductCard(product) {
+  const id = encodeURIComponent(product.id);
+  const name = escapeHtml(product.name);
+  const image = escapeHtml(product.image);
+
   return `
     <article class="product-card">
-      <a href="/producto.html?id=${encodeURIComponent(product.id)}" aria-label="Ver ${escapeHtml(product.name)}">
-        <div class="product-image-wrap">
-          ${product.badge ? `<span class="product-badge">${escapeHtml(product.badge)}</span>` : ""}
-          <img
-            class="product-image"
-            src="${escapeHtml(product.image)}"
-            alt="${escapeHtml(product.name)}"
-            loading="lazy"
-            onerror="this.style.display='none';this.parentElement.classList.add('image-missing')"
-          >
+      <a href="/producto.html?id=${id}" aria-label="Ver ${name}">
+        <div class="product-image-wrap ${image ? "" : "image-missing"}">
+          ${product.badge
+            ? `<span class="product-badge">${escapeHtml(product.badge)}</span>`
+            : ""}
+
+          ${image
+            ? `<img class="product-image"
+                src="${image}"
+                alt="${name}"
+                loading="lazy"
+                onerror="this.style.display='none';this.parentElement.classList.add('image-missing')">`
+            : ""}
         </div>
       </a>
 
       <div class="product-content">
         <div class="product-category">${escapeHtml(product.category)}</div>
-        <h3><a href="/producto.html?id=${encodeURIComponent(product.id)}">${escapeHtml(product.name)}</a></h3>
+        <h3><a href="/producto.html?id=${id}">${name}</a></h3>
         <p class="product-description">${escapeHtml(product.short)}</p>
-        <div class="product-price">${money(product.price, product.currency)} <small>MXN</small></div>
+
+        <div class="product-price">
+          ${money(product.price, product.currency)}
+          <small>${escapeHtml(product.currency)}</small>
+        </div>
 
         <button
           class="button primary"
           type="button"
           data-add="${escapeHtml(product.id)}"
-          aria-label="Añadir ${escapeHtml(product.name)} al carrito"
+          aria-label="Añadir ${name} al carrito"
         >
-          ${icon("cart")} Añadir
+          Añadir al carrito <span aria-hidden="true">＋</span>
         </button>
       </div>
-    </article>`;
+    </article>
+  `;
 }
 
-function bindAddButtons(root = document) {
-  $$("[data-add]", root).forEach(button => {
-    button.addEventListener("click", () => addToCart(button.dataset.add));
-  });
+function renderProductCards(target, products) {
+  if (!target) return;
+
+  if (catalogError) {
+    target.innerHTML = renderEmptyState(
+      "No se pudo cargar el catálogo",
+      "Recarga la página. Si el problema continúa, revisa /api/products en tu navegador."
+    );
+    return;
+  }
+
+  if (!products.length) {
+    target.innerHTML = renderEmptyState(
+      "No hay productos disponibles",
+      "Vuelve a intentarlo más tarde."
+    );
+    return;
+  }
+
+  target.innerHTML = products.map(renderProductCard).join("");
+  bindAddButtons(target);
 }
 
 function renderFeatured() {
-  const target = $("#featured-products");
-  if (!target) return;
+  const targets = [
+    $("#featured-products"),
+    $("#products")
+  ].filter(Boolean);
 
-  target.innerHTML = allProducts.slice(0, 4).map(productCard).join("");
-  bindAddButtons(target);
+  // Evita renderizar dos veces sobre el mismo elemento.
+  [...new Set(targets)].forEach(target => {
+    renderProductCards(target, allProducts.slice(0, 4));
+  });
 }
 
 function renderShop() {
@@ -230,19 +336,23 @@ function renderShop() {
   const count = $("#catalog-count");
 
   function update() {
-    const term = (search?.value || "").trim().toLowerCase();
+    const term = String(search?.value || "").trim().toLowerCase();
     const selectedCategory = category?.value || "all";
 
     let filtered = allProducts.filter(product => {
-      const matchesText = [
+      const searchable = [
         product.name,
         product.category,
         product.short,
         product.description
-      ].join(" ").toLowerCase().includes(term);
+      ].join(" ").toLowerCase();
 
-      return matchesText &&
-        (selectedCategory === "all" || product.category === selectedCategory);
+      const matchesTerm = searchable.includes(term);
+      const matchesCategory =
+        selectedCategory === "all" ||
+        product.category === selectedCategory;
+
+      return matchesTerm && matchesCategory;
     });
 
     switch (sort?.value) {
@@ -253,24 +363,21 @@ function renderShop() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case "name":
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        filtered.sort((a, b) => a.name.localeCompare(b.name, "es"));
         break;
     }
 
-    target.innerHTML = filtered.length
-      ? filtered.map(productCard).join("")
-      : `<div class="empty-state">No encontramos productos con esos filtros.</div>`;
+    renderProductCards(target, filtered);
 
     if (count) {
       count.textContent = `${filtered.length} producto(s) en el catálogo.`;
     }
-
-    bindAddButtons(target);
   }
 
   [search, category, sort].forEach(control => {
-    control?.addEventListener("input", update);
-    control?.addEventListener("change", update);
+    if (!control) return;
+    control.addEventListener("input", update);
+    control.addEventListener("change", update);
   });
 
   update();
@@ -280,59 +387,75 @@ function renderProductDetail() {
   const target = $("#product-detail");
   if (!target) return;
 
-  const id = new URLSearchParams(location.search).get("id");
+  const id = new URLSearchParams(window.location.search).get("id");
   const product = allProducts.find(item => item.id === id);
 
   if (!product) {
-    target.innerHTML = `
-      <div class="empty-state">
-        <h2>Producto no encontrado</h2>
-        <p>Puede que el enlace no sea válido o que el producto ya no esté en el catálogo.</p>
-        <a class="button primary" href="/tienda.html">Volver a la tienda</a>
-      </div>`;
+    target.innerHTML = renderEmptyState(
+      "Producto no encontrado",
+      "El enlace puede ser incorrecto o el producto ya no está disponible."
+    ) + `<p><a class="button primary" href="/tienda.html">Volver a la tienda</a></p>`;
     return;
   }
 
   document.title = `${product.name} — elgato.lol`;
-  $("#breadcrumb-name").textContent = product.name;
+
+  const breadcrumb = $("#breadcrumb-name");
+  if (breadcrumb) breadcrumb.textContent = product.name;
+
+  // features puede faltar en productos del catálogo; nunca llamar .map()
+  // sobre un valor que no sea un array.
+  const features = Array.isArray(product.features)
+    ? product.features.filter(feature => typeof feature === "string")
+    : [];
+
+  const featureHtml = features.length
+    ? `<ul class="feature-list">
+        ${features.map(feature => `<li>${escapeHtml(feature)}</li>`).join("")}
+       </ul>`
+    : "";
+
+  const imageHtml = product.image
+    ? `<img src="${escapeHtml(product.image)}"
+        alt="${escapeHtml(product.name)}"
+        loading="eager"
+        onerror="this.style.display='none'">`
+    : "";
 
   target.innerHTML = `
     <div class="detail-image">
-      <img
-        src="${escapeHtml(product.image)}"
-        alt="${escapeHtml(product.name)}"
-        onerror="this.style.display='none'"
-      >
+      ${imageHtml}
     </div>
 
     <div class="detail-copy">
       <span class="eyebrow">${escapeHtml(product.category)}</span>
       <h1>${escapeHtml(product.name)}</h1>
-      <p>${escapeHtml(product.description)}</p>
+      <p>${escapeHtml(product.description || product.short)}</p>
 
-      <div class="detail-price">${money(product.price, product.currency)} <small>MXN</small></div>
+      <div class="detail-price">
+        ${money(product.price, product.currency)}
+        <small>${escapeHtml(product.currency)}</small>
+      </div>
 
-      <ul class="feature-list">
-        ${product.features.map(feature => `<li>${escapeHtml(feature)}</li>`).join("")}
-      </ul>
+      ${featureHtml}
 
       <div class="notice panel">
-        Producto de catálogo de demostración. Comprueba disponibilidad y condiciones antes de publicar una oferta real.
+        El pedido se procesa mediante el checkout seguro.
+        La entrega solo se habilita cuando el proveedor confirma el pago.
       </div>
 
       <div class="detail-actions">
-        <button class="button primary" type="button" data-add="${escapeHtml(product.id)}">
-          ${icon("cart")} Añadir al carrito
+        <button class="button primary" type="button"
+          data-add="${escapeHtml(product.id)}">
+          Añadir al carrito
         </button>
         <a class="button secondary" href="/tienda.html">Seguir explorando</a>
       </div>
-    </div>`;
+    </div>
+  `;
 
   bindAddButtons(target);
 }
-
-
-       
 
 function renderCart() {
   const target = $("#cart-items");
@@ -341,8 +464,21 @@ function renderCart() {
   function update() {
     const currentCart = getCart();
 
+    if (catalogError) {
+      target.innerHTML = renderEmptyState(
+        "No se pudo consultar el catálogo",
+        "No se puede calcular el carrito ahora. Intenta recargar la página."
+      );
+      const subtotal = $("#cart-subtotal");
+      const total = $("#cart-total");
+      if (subtotal) subtotal.textContent = "—";
+      if (total) total.textContent = "—";
+      return;
+    }
+
     const items = currentCart.map(item => ({
-      ...item,
+      id: item.id,
+      quantity: item.quantity,
       product: allProducts.find(product => product.id === item.id)
     })).filter(item => item.product);
 
@@ -351,68 +487,73 @@ function renderCart() {
       0
     );
 
-    target.innerHTML = items.length ? items.map(item => `
-      <article class="cart-row">
-        <img
-          src="${escapeHtml(item.product.image)}"
-          alt="${escapeHtml(item.product.name)}"
-          onerror="this.style.display='none'"
-        >
+    if (!items.length) {
+      target.innerHTML = `
+        <div class="empty-state">
+          <h2>Tu carrito está vacío</h2>
+          <p>Explora la tienda para añadir productos.</p>
+          <a class="button primary" href="/tienda.html">Ir a la tienda</a>
+        </div>
+      `;
+    } else {
+      target.innerHTML = items.map(item => `
+        <article class="cart-row">
+          <img
+            src="${escapeHtml(item.product.image)}"
+            alt="${escapeHtml(item.product.name)}"
+            onerror="this.style.display='none'"
+          >
 
-        <div>
-          <h3>
-            <a href="/producto.html?id=${encodeURIComponent(item.id)}">
-              ${escapeHtml(item.product.name)}
-            </a>
-          </h3>
+          <div>
+            <h3>
+              <a href="/producto.html?id=${encodeURIComponent(item.id)}">
+                ${escapeHtml(item.product.name)}
+              </a>
+            </h3>
 
-          <p>${money(item.product.price)} MXN por unidad</p>
+            <p>${money(item.product.price, item.product.currency)} por unidad</p>
 
-          <div class="quantity-control">
-            <button type="button"
-              data-quantity="${escapeHtml(item.id)}"
-              data-change="-1"
-              aria-label="Restar una unidad">−</button>
+            <div class="quantity-control">
+              <button type="button"
+                data-quantity="${escapeHtml(item.id)}"
+                data-change="-1"
+                aria-label="Restar una unidad">−</button>
 
-            <span>${item.quantity}</span>
+              <span>${item.quantity}</span>
 
-            <button type="button"
-              data-quantity="${escapeHtml(item.id)}"
-              data-change="1"
-              aria-label="Añadir una unidad">+</button>
+              <button type="button"
+                data-quantity="${escapeHtml(item.id)}"
+                data-change="1"
+                aria-label="Añadir una unidad">＋</button>
 
-            <button type="button"
-              class="remove-button"
-              data-remove="${escapeHtml(item.id)}">Quitar</button>
+              <button type="button"
+                class="remove-button"
+                data-remove="${escapeHtml(item.id)}">Quitar</button>
+            </div>
           </div>
-        </div>
 
-        <div class="cart-line-total">
-          ${money(item.product.price * item.quantity)}
-          <br><small>MXN</small>
-        </div>
-      </article>
-    `).join("") : `
-      <div class="empty-state">
-        <h2>Tu carrito está vacío</h2>
-        <p>Explora la tienda para añadir productos.</p>
-        <a class="button primary" href="/tienda.html">Ir a la tienda</a>
-      </div>
-    `;
+          <div class="cart-line-total">
+            ${money(item.product.price * item.quantity, item.product.currency)}
+          </div>
+        </article>
+      `).join("");
+    }
 
-    $("#cart-subtotal").textContent = `${money(total)} MXN`;
-    $("#cart-total").textContent = `${money(total)} MXN`;
+    const subtotal = $("#cart-subtotal");
+    const totalNode = $("#cart-total");
+
+    if (subtotal) subtotal.textContent = `${money(total)} MXN`;
+    if (totalNode) totalNode.textContent = `${money(total)} MXN`;
 
     $$("[data-quantity]", target).forEach(button => {
       button.addEventListener("click", () => {
         const id = button.dataset.quantity;
         const change = Number(button.dataset.change);
 
-        const next = getCart().map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity + change }
-            : item
-        ).filter(item => item.quantity > 0 && item.quantity <= 10);
+        const next = getCart().map(item => {
+          if (item.id !== id) return item;
+          return { ...item, quantity: item.quantity + change };
+        }).filter(item => item.quantity >= 1 && item.quantity <= 10);
 
         saveCart(next);
         update();
@@ -421,33 +562,41 @@ function renderCart() {
 
     $$("[data-remove]", target).forEach(button => {
       button.addEventListener("click", () => {
-        saveCart(
-          getCart().filter(item => item.id !== button.dataset.remove)
-        );
+        const next = getCart().filter(item => item.id !== button.dataset.remove);
+        saveCart(next);
         update();
       });
     });
+
+    const checkoutButton = $("#checkout-form button[type='submit']");
+    if (checkoutButton) {
+      checkoutButton.disabled = items.length === 0;
+    }
   }
 
   update();
 
   const form = $("#checkout-form");
+  if (!form || form.dataset.bound === "true") return;
+  form.dataset.bound = "true";
 
-  form?.addEventListener("submit", async event => {
+  form.addEventListener("submit", async event => {
     event.preventDefault();
 
     const result = $("#checkout-result");
-    const button = $('button[type="submit"]', form);
+    const button = $("button[type='submit']", form);
     const currentCart = getCart();
 
     if (!currentCart.length) {
-      result.textContent = "Añade productos antes de pagar.";
+      if (result) result.textContent = "Añade productos antes de pagar.";
       return;
     }
 
-    button.disabled = true;
-    button.textContent = "Creando factura...";
-    result.textContent = "";
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Creando factura...";
+    }
+    if (result) result.textContent = "";
 
     try {
       const response = await fetch("/api/create-order", {
@@ -461,14 +610,14 @@ function renderCart() {
         })
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         throw new Error(data.error || "No se pudo crear la factura.");
       }
 
       if (typeof data.checkoutUrl !== "string") {
-        throw new Error("NOWPayments no devolvió el enlace de pago.");
+        throw new Error("El servidor no devolvió un enlace de pago.");
       }
 
       const checkout = new URL(data.checkoutUrl);
@@ -480,77 +629,97 @@ function renderCart() {
           checkout.hostname.endsWith(".nowpayments.io")
         )
       ) {
-        throw new Error("El enlace de pago no es válido.");
+        throw new Error("El enlace de pago recibido no es válido.");
       }
 
-      // El pedido ya está guardado en MongoDB.
-      localStorage.removeItem(CART_KEY);
-      updateCartCount();
+      // No borres el carrito aquí; se conserva si el pago se cancela.
       window.location.assign(checkout.toString());
     } catch (error) {
-      result.textContent =
-        error.message || "No se pudo conectar con el procesador.";
+      if (result) {
+        result.textContent = error.message || "No se pudo iniciar el pago.";
+      }
 
-      button.disabled = false;
-      button.textContent = "Pagar con criptomonedas →";
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Pagar con criptomonedas →";
+      }
     }
   });
 }
-    
- 
- 
 
 function setupSupportForm() {
   const form = $("#support-form");
-  if (!form) return;
+  if (!form || form.dataset.bound === "true") return;
+  form.dataset.bound = "true";
 
   form.addEventListener("submit", event => {
     event.preventDefault();
 
-    const name = $("#support-name").value.trim();
-    const email = $("#support-email").value.trim();
-    const topic = $("#support-topic").value;
-    const message = $("#support-message").value.trim();
+    const name = $("#support-name")?.value.trim() || "";
+    const email = $("#support-email")?.value.trim() || "";
+    const topic = $("#support-topic")?.value || "";
+    const message = $("#support-message")?.value.trim() || "";
+    const result = $("#support-result");
 
-    $("#support-result").textContent =
-      `Mensaje preparado para ${name} (${email}). Motivo: ${topic}. ` +
-      `Contenido: ${message}. Este formulario todavía no envía mensajes a un servidor.`;
+    if (!result) return;
+
+    result.textContent =
+      `El formulario está validado, pero todavía no envía mensajes a un servidor. ` +
+      `No se ha enviado nada.`;
   });
+}
+
+function updateStaticPageDetails() {
+  const year = $("#year");
+  if (year) year.textContent = String(new Date().getFullYear());
 }
 
 async function loadProducts() {
   try {
-    const response = await fetch("/api/products");
+    const response = await fetch("/api/products", {
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
 
     if (!response.ok) {
-      throw new Error("Error cargando productos");
+      throw new Error(`El catálogo respondió HTTP ${response.status}.`);
     }
 
     const data = await response.json();
-    allProducts = Array.isArray(data.products) ? data.products : [];
-  } catch {
-    allProducts = [];
 
-    const grid = $("#featured-products, #shop-products");
-
-    if (grid) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          No se pudo cargar el catálogo. Comprueba que estás ejecutando la web con Vercel.
-        </div>`;
+    if (!Array.isArray(data.products)) {
+      throw new Error("La respuesta del catálogo no contiene products[].");
     }
 
-    return;
+    allProducts = data.products
+      .map(normalizeProduct)
+      .filter(product => product.id.length > 0);
+
+    catalogLoaded = true;
+    catalogError = null;
+  } catch (error) {
+    allProducts = [];
+    catalogLoaded = false;
+    catalogError = error.message || "Error cargando los productos.";
+    console.error("Error cargando /api/products:", error);
   }
 
   if (page === "home") renderFeatured();
   if (page === "shop") renderShop();
   if (page === "product") renderProductDetail();
   if (page === "cart") renderCart();
+
+  // Páginas que podrían usar una cuadrícula sin data-page específica.
+  if (page !== "home" && page !== "shop" && $("#featured-products")) {
+    renderFeatured();
+  }
+
+  updateCartCount();
 }
 
 renderHeader();
 renderFooter();
 updateCartCount();
 setupSupportForm();
+updateStaticPageDetails();
 loadProducts();
