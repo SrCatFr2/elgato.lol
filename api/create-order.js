@@ -11,26 +11,20 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const {
-      BTCPAY_URL,
-      BTCPAY_API_KEY,
-      BTCPAY_STORE_ID,
-      SITE_URL
-    } = process.env;
+    const apiKey = process.env.NOWPAYMENTS_API_KEY;
+    const siteUrl = process.env.SITE_URL;
 
-    if (!BTCPAY_URL || !BTCPAY_API_KEY ||
-        !BTCPAY_STORE_ID || !SITE_URL) {
+    if (!apiKey || !siteUrl) {
       return res.status(503).json({
-        error: "El pago cripto todavía no está configurado."
+        error: "NOWPayments aún no está configurado en el servidor."
       });
     }
 
-    const site = new URL(SITE_URL);
-    const btcpay = new URL(BTCPAY_URL);
+    const site = new URL(siteUrl);
 
-    if (site.protocol !== "https:" || btcpay.protocol !== "https:") {
+    if (site.protocol !== "https:") {
       return res.status(500).json({
-        error: "SITE_URL y BTCPAY_URL deben usar HTTPS."
+        error: "SITE_URL debe usar HTTPS."
       });
     }
 
@@ -61,6 +55,7 @@ module.exports = async (req, res) => {
       }
 
       seen.add(id);
+
       cleanItems.push({
         id: product.id,
         name: product.name,
@@ -75,69 +70,70 @@ module.exports = async (req, res) => {
     );
 
     if (!Number.isSafeInteger(totalMXN) || totalMXN <= 0) {
-      return res.status(400).json({ error: "Total inválido." });
+      return res.status(400).json({ error: "El total no es válido." });
     }
 
     const { db } = await getMongo();
     const orders = db.collection("orders");
 
+    const orderId = new ObjectId();
     const token = crypto.randomBytes(32).toString("hex");
-    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const now = new Date();
+    const publicTokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
 
-    const order = {
-      _id: new ObjectId(),
-      publicTokenHash: tokenHash,
+    await orders.insertOne({
+      _id: orderId,
+      publicTokenHash,
       status: "pending_payment",
-      deliveryStatus: "pending_payment",
+      paymentStatus: "waiting",
       currency: "MXN",
       totalMXN,
-      totalMinor: totalMXN * 100,
       items: cleanItems,
       invoiceId: null,
-      paymentStatus: null,
-      createdAt: now,
-      updatedAt: now
-    };
+      deliveredItems: null,
+      deliveryStatus: "pending_payment",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
 
-    await orders.insertOne(order);
-
-    const redirectURL =
-      `${site.origin}/pago.html?token=${encodeURIComponent(token)}`;
-
-    const response = await fetch(
-      `${btcpay.origin}/api/v1/stores/${encodeURIComponent(BTCPAY_STORE_ID)}/invoices`,
+    const baseUrl = site.origin;
+    const invoiceResponse = await fetch(
+      "https://api.nowpayments.io/v1/invoice",
       {
         method: "POST",
         headers: {
-          Authorization: `token ${BTCPAY_API_KEY}`,
+          "x-api-key": apiKey,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          amount: (totalMXN).toFixed(2),
-          currency: "MXN",
-          metadata: {
-            orderId: order._id.toString()
-          },
-          checkout: {
-            redirectURL,
-            redirectAutomatically: true
-          }
+          price_amount: totalMXN,
+          price_currency: "mxn",
+          order_id: orderId.toString(),
+          order_description: `ElGato.lol order ${orderId.toString()}`,
+          ipn_callback_url: `${baseUrl}/api/nowpayments-ipn`,
+          success_url: `${baseUrl}/pago.html?token=${token}`,
+          cancel_url: `${baseUrl}/carrito.html`
         })
       }
     );
 
-    const invoice = await response.json().catch(() => ({}));
+    const invoice = await invoiceResponse.json().catch(() => ({}));
 
-    if (!response.ok || !invoice.id || !invoice.checkoutLink) {
+    if (
+      !invoiceResponse.ok ||
+      !invoice.id ||
+      !invoice.invoice_url
+    ) {
       console.error(
-        "BTCPay invoice error:",
-        response.status,
-        invoice.message || invoice.errorCode || "Error desconocido"
+        "NOWPayments invoice error:",
+        invoiceResponse.status,
+        invoice.message || invoice
       );
 
       await orders.updateOne(
-        { _id: order._id },
+        { _id: orderId },
         {
           $set: {
             status: "invoice_error",
@@ -147,28 +143,28 @@ module.exports = async (req, res) => {
       );
 
       return res.status(502).json({
-        error: "No se pudo generar la factura. Inténtalo de nuevo."
+        error: "NOWPayments no pudo crear la factura. Inténtalo de nuevo."
       });
     }
 
     await orders.updateOne(
-      { _id: order._id },
+      { _id: orderId },
       {
         $set: {
-          invoiceId: invoice.id,
+          invoiceId: String(invoice.id),
           updatedAt: new Date()
         }
       }
     );
 
     return res.status(200).json({
-      checkoutUrl: invoice.checkoutLink
+      checkoutUrl: invoice.invoice_url
     });
   } catch (error) {
     console.error("create-order:", error.message);
 
     return res.status(500).json({
-      error: "No se pudo crear el pedido."
+      error: "No se pudo crear el pedido. Revisa las variables del servidor."
     });
   }
 };
