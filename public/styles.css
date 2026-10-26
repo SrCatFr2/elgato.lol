@@ -485,3 +485,108 @@ code { color: #d0c5ff; font-size: .9em; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   #space-canvas { display: none; }
 }
+
+
+.payment-page { max-width: 900px; }
+
+.payment-status {
+  min-height: 230px;
+  padding: clamp(22px, 4vw, 38px);
+  overflow: hidden;
+  border-radius: 23px;
+}
+
+.payment-inner { max-width: 680px; margin: 0 auto; }
+
+.payment-symbol {
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 19px;
+  border: 1px solid rgba(203,188,255,.22);
+  border-radius: 15px;
+  background: rgba(173,151,255,.1);
+  color: #d7cbff;
+  font: 700 23px "Manrope", sans-serif;
+}
+
+.payment-symbol-ok {
+  color: #a7f4d7;
+  border-color: rgba(167,244,215,.24);
+  background: rgba(111,232,191,.09);
+}
+
+.payment-title {
+  margin: 11px 0;
+  font: 800 clamp(25px,4vw,34px)/1.15 "Manrope",sans-serif;
+  letter-spacing: -.055em;
+}
+
+.payment-copy {
+  max-width: 610px;
+  margin: 0;
+  color: #a9acc6;
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.payment-order-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 20px;
+  margin: 20px 0;
+  padding: 13px 0;
+  border-block: 1px solid var(--line);
+  color: #a1a6c1;
+  font-size: 10px;
+}
+
+.delivered-item {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.delivered-title {
+  margin: 0 0 12px;
+  color: #f0edff;
+  font: 700 14px "Manrope",sans-serif;
+}
+
+.delivery-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid rgba(215,208,255,.09);
+  border-radius: 10px;
+  background: rgba(7,8,20,.6);
+}
+
+.delivery-code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #cfc5ff;
+  font-size: 11px;
+  user-select: all;
+}
+
+.copy-code { flex: 0 0 auto; }
+
+.payment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+@media (max-width: 520px) {
+  .payment-status { padding: 20px 15px; }
+  .delivery-code-row { align-items: flex-start; flex-direction: column; }
+}
+
