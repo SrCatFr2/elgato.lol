@@ -1,4 +1,6 @@
 
+"use strict";
+
 const crypto = require("node:crypto");
 const { getMongo } = require("../lib/mongodb");
 const { fulfillOrder } = require("../lib/fulfill-order");
@@ -17,10 +19,13 @@ module.exports = async (req, res) => {
       req.url,
       process.env.SITE_URL || "https://elgato.lol"
     );
+
     const token = url.searchParams.get("token") || "";
 
-    if (!/^[a-f0-9]{64}$/.test(token)) {
-      return res.status(400).json({ error: "Enlace de pedido inválido." });
+    if (!/^[a-f0-9]{64}$/i.test(token)) {
+      return res.status(400).json({
+        error: "El enlace del pedido no es válido."
+      });
     }
 
     const tokenHash = crypto
@@ -31,13 +36,17 @@ module.exports = async (req, res) => {
     const { client, db } = await getMongo();
     const orders = db.collection("orders");
 
-    let order = await orders.findOne({ publicTokenHash: tokenHash });
+    let order = await orders.findOne({
+      publicTokenHash: tokenHash
+    });
 
     if (!order) {
-      return res.status(404).json({ error: "Pedido no encontrado." });
+      return res.status(404).json({
+        error: "Pedido no encontrado."
+      });
     }
 
-    // Reintenta entregar si el pago está confirmado y se repuso el stock.
+    // Reintenta la entrega si faltaba inventario y ya se repuso.
     if (
       order.status === "paid" &&
       order.deliveryStatus !== "delivered"
@@ -55,9 +64,9 @@ module.exports = async (req, res) => {
       status: order.status,
       paymentStatus: order.paymentStatus,
       deliveryStatus: order.deliveryStatus,
-      currency: order.currency,
+      currency: order.currency || "MXN",
       total: order.totalMXN,
-      items: order.items.map(item => ({
+      items: (order.items || []).map(item => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity
@@ -66,6 +75,7 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error("order-status:", error.message);
+
     return res.status(500).json({
       error: "No se pudo consultar el pedido."
     });
