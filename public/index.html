@@ -1,162 +1,113 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090910">
-  <meta name="description" content="ElGato: productos digitales, cuentas y servicios en un solo lugar.">
-
-  <title>ElGato — Tu tienda digital</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070813">
+  <meta name="description" content="ElGato.lol — servicios digitales en tu propio universo.">
+  <title>ElGato.lol — Tu universo digital</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Conserva los estilos compartidos de las demás páginas -->
   <link rel="stylesheet" href="/styles.css">
-
-  <!-- Estilos exclusivos de la portada -->
-  <link rel="stylesheet" href="/home.css">
 </head>
+<body class="home-page">
+  <div class="ambient ambient-purple" aria-hidden="true"></div>
+  <div class="ambient ambient-blue" aria-hidden="true"></div>
 
-<body data-page="home" class="home-page">
-
-  <header class="home-header">
-    <a class="home-brand" href="/" aria-label="ElGato, inicio">
-      <span class="home-brand-icon">g.</span>
-      <span>elgato<span class="home-brand-dot">.lol</span></span>
+  <header class="nav glass">
+    <a class="brand" href="/" aria-label="ElGato inicio">
+      <span class="brand-mark">g<span>.</span></span>
+      <span class="brand-name">elgato<span class="brand-domain">.lol</span></span>
     </a>
-
-    <nav class="home-nav" aria-label="Navegación principal">
-      <a class="home-nav-active" href="/">Inicio</a>
-      <a href="/tienda.html">Tienda</a>
-      <a href="/como-funciona.html">Cómo funciona</a>
-      <a href="/soporte.html">Soporte</a>
+    <nav aria-label="Navegación principal">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como-funciona">Cómo funciona</a>
     </nav>
-
-    <a class="home-cart" href="/carrito.html">
-      <span aria-hidden="true">↗</span> Mi carrito
-    </a>
+    <button class="cart-button" id="cart-button" type="button" aria-label="Ver carrito">Mis pedidos <span id="cart-count">0</span></button>
   </header>
 
   <main>
-    <section class="home-hero">
-      <div class="home-hero-image" aria-hidden="true"></div>
-      <div class="home-hero-shade" aria-hidden="true"></div>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-backdrop" aria-hidden="true"></div>
+      <canvas id="space-canvas" aria-hidden="true"></canvas>
+      <div class="hero-vignette" aria-hidden="true"></div>
 
-      <div class="home-hero-content">
-        <div class="home-eyebrow">
-          <span class="home-status-dot"></span>
-          TU ESPACIO DIGITAL
+      <div class="hero-copy-wrap">
+        <div class="eyebrow"><span class="pulse"></span> UN UNIVERSO DIGITAL, A TU ALCANCE</div>
+        <h1 id="hero-title">Lo digital.<br><span>En otra dimensión.</span></h1>
+        <p class="hero-copy">Explora servicios digitales con una experiencia diferente. Encuentra lo que buscas, revisa el catálogo y crea tu pedido desde un solo lugar.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#catalogo">Explorar catálogo <span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="#como-funciona">Cómo funciona</a>
         </div>
-
-        <h1>Lo digital,<br>sin tantas <span>vueltas.</span></h1>
-
-        <p>
-          Encuentra tus servicios digitales favoritos en un solo lugar.
-          Explora el catálogo y encuentra lo que buscas.
-        </p>
-
-        <div class="home-hero-actions">
-          <a class="home-button home-button-primary" href="/tienda.html">
-            Explorar tienda <span aria-hidden="true">↗</span>
-          </a>
-          <a class="home-button home-button-secondary" href="/como-funciona.html">
-            Cómo funciona
-          </a>
-        </div>
-
-        <div class="home-hero-note">
-          <span>✳</span> Un catálogo sencillo, a tu manera.
+        <div class="hero-note"><span aria-hidden="true">✦</span> Catálogo sencillo <i></i> Experiencia clara <i></i> Diseño espacial</div>
+        <div class="hero-stats" aria-label="Características de la tienda">
+          <div><strong>01</strong><span>Explora</span></div>
+          <div class="stat-divider"></div>
+          <div><strong>02</strong><span>Elige</span></div>
+          <div class="stat-divider"></div>
+          <div><strong>03</strong><span>Solicita</span></div>
         </div>
       </div>
 
-      <img
-        class="home-astronaut"
-        src="/assets/srcat-astronaut.png"
-        alt=""
-        fetchpriority="high"
-      >
-
-      <div class="home-orbit-label">
-        <span>ELGATO.LOL</span>
-        <span>— EXPLORA MÁS ALLÁ —</span>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-aura"></div>
+        <div class="orbital orbital-back"></div>
+        <div class="orbital orbital-mid"></div>
+        <div class="orbital orbital-front"></div>
+        <div class="planet-3d"><div class="planet-cloud"></div><div class="planet-highlight"></div></div>
+        <div class="planet-moon"></div>
+        <img class="hero-cat" src="/assets/srcat-astronaut.png" alt="" fetchpriority="high">
+        <div class="float-card float-card-top"><span class="float-card-dot"></span><div><small>ESTÁS EN</small><strong>ELGATO.LOL</strong></div><span class="float-card-mark">✧</span></div>
+        <div class="float-card float-card-bottom"><span class="mini-orb">✦</span><div><small>EXPLORA</small><strong>Tu próximo mundo</strong></div><span class="float-arrow">↗</span></div>
       </div>
+
+      <div class="hero-coordinate" aria-hidden="true"><span>COORDENADAS</span><b>32°31' N / 117°02' W</b></div>
+      <div class="hero-scroll" aria-hidden="true"><span></span> DESLIZA PARA EXPLORAR</div>
     </section>
 
-    <section class="home-catalog">
-      <div class="home-section-heading">
+    <section class="section catalog-section" id="catalogo">
+      <div class="section-heading">
         <div>
-          <span class="home-kicker">EL CATÁLOGO</span>
-          <h2>¿Qué estás buscando?</h2>
-          <p>Algunas categorías para empezar a explorar.</p>
+          <div class="eyebrow section-eyebrow">TU PRÓXIMO DESCUBRIMIENTO</div>
+          <h2>Explora el catálogo<span class="heading-period">.</span></h2>
+          <p>Una selección para comenzar. Los productos y precios se administran desde el catálogo de la tienda.</p>
         </div>
-
-        <a class="home-text-link" href="/tienda.html">
-          Ver toda la tienda <span aria-hidden="true">→</span>
-        </a>
+        <span class="catalog-label"><span></span> PRECIOS EN MXN</span>
       </div>
-
-      <div class="home-category-grid">
-        <a class="home-category-card home-card-spotify" href="/tienda.html">
-          <img src="/assets/spotify.jpg" alt="" loading="lazy">
-          <div class="home-card-overlay"></div>
-          <div class="home-card-content">
-            <span class="home-card-label">MÚSICA</span>
-            <h3>Spotify</h3>
-            <span class="home-card-arrow">↗</span>
-          </div>
-        </a>
-
-        <a class="home-category-card home-card-netflix" href="/tienda.html">
-          <img src="/assets/netflix.jpg" alt="" loading="lazy">
-          <div class="home-card-overlay"></div>
-          <div class="home-card-content">
-            <span class="home-card-label">ENTRETENIMIENTO</span>
-            <h3>Netflix</h3>
-            <span class="home-card-arrow">↗</span>
-          </div>
-        </a>
-
-        <a class="home-category-card home-card-chatgpt" href="/tienda.html">
-          <img src="/assets/chatgpt.jpg" alt="" loading="lazy">
-          <div class="home-card-overlay"></div>
-          <div class="home-card-content">
-            <span class="home-card-label">PRODUCTIVIDAD</span>
-            <h3>ChatGPT</h3>
-            <span class="home-card-arrow">↗</span>
-          </div>
-        </a>
-      </div>
+      <div id="products" class="product-grid"><div class="loading glass"><span class="loading-star">✦</span><span>Cargando el catálogo...</span></div></div>
     </section>
 
-    <section class="home-bottom-banner">
-      <div>
-        <span class="home-kicker">¿PRIMERA VEZ POR AQUÍ?</span>
-        <h2>Empieza por lo sencillo.</h2>
-        <p>Consulta cómo funciona la tienda antes de realizar tu pedido.</p>
-      </div>
-      <a class="home-button home-button-primary" href="/como-funciona.html">
-        Conocer más <span aria-hidden="true">→</span>
-      </a>
+    <section class="how glass" id="como-funciona">
+      <div class="how-icon"><img src="/assets/icon-cat.svg" alt="" loading="lazy"></div>
+      <div class="how-copy"><div class="eyebrow">TRES PASOS. SIN COMPLICACIONES.</div><h2>De la selección a tu pedido.</h2><p>Explora los productos disponibles, elige el que te interesa y sigue los pasos para generar tu pedido. Los pedidos de esta versión son de prueba: no se realiza ningún cobro.</p></div>
+      <div class="how-steps"><div><b>01</b><span>Explora</span></div><div><b>02</b><span>Selecciona</span></div><div><b>03</b><span>Solicita</span></div></div>
+      <div class="how-stars" aria-hidden="true">✦</div>
     </section>
   </main>
 
-  <footer class="home-footer">
-    <a class="home-brand" href="/">
-      <span class="home-brand-icon">g.</span>
-      <span>elgato<span class="home-brand-dot">.lol</span></span>
-    </a>
-    <p>Tu espacio digital.</p>
-    <div class="home-footer-links">
-      <a href="/tienda.html">Tienda</a>
-      <a href="/soporte.html">Soporte</a>
-      <span>© ElGato</span>
-    </div>
+  <footer>
+    <a class="brand footer-brand" href="/" aria-label="ElGato inicio"><span class="brand-mark">g<span>.</span></span><span class="brand-name">elgato<span class="brand-domain">.lol</span></span></a>
+    <span class="footer-tagline">Un pequeño rincón en un universo enorme.</span>
+    <span>© <span id="year"></span> ELGATO.LOL</span>
   </footer>
 
-  <!-- Se conserva por compatibilidad con el proyecto actual -->
+  <dialog id="order-dialog" class="order-dialog">
+    <form method="dialog" class="dialog-close"><button aria-label="Cerrar">×</button></form>
+    <div class="eyebrow">NUEVO PEDIDO</div><h2 id="dialog-product">Tu producto</h2>
+    <p class="dialog-copy">Introduce tu correo para crear un pedido de prueba.</p>
+    <form id="order-form">
+      <label for="email">Correo electrónico</label>
+      <input id="email" name="email" type="email" autocomplete="email" placeholder="tu@correo.com" required>
+      <button class="button primary full" type="submit">Crear pedido de prueba <span aria-hidden="true">↗</span></button>
+    </form>
+    <div id="order-result" class="order-result" aria-live="polite"></div>
+    <p class="fine-print">Este prototipo no cobra dinero ni entrega productos reales.</p>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="/space.js" defer></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
