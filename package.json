@@ -1,13 +1,14 @@
 
 {
   "name": "elgato-lol",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "vercel dev"
   },
   "dependencies": {
-    "@vercel/node": "^5.3.0"
+    "@vercel/node": "^5.3.0",
+    "mongodb": "^6.17.0"
   },
   "devDependencies": {
     "vercel": "^48.0.0"
