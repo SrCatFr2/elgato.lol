@@ -67,6 +67,27 @@ function updateCartCount() {
   });
 }
 
+let toastTimer;
+
+function showToast(message) {
+  let toast = $("#toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className = "toast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
 function addToCart(productId) {
   const product = allProducts.find(item => item.id === productId);
   if (!product) return;
@@ -76,7 +97,7 @@ function addToCart(productId) {
 
   if (existing) {
     if (existing.quantity >= 10) {
-      alert("El límite es de 10 unidades por producto.");
+      showToast("El límite es de 10 unidades por producto.");
       return;
     }
     existing.quantity++;
@@ -85,7 +106,7 @@ function addToCart(productId) {
   }
 
   saveCart(cart);
-  alert(`${product.name} se añadió al carrito.`);
+  showToast(`${product.name} se añadió al carrito.`);
 }
 
 function renderHeader() {
@@ -103,13 +124,18 @@ function renderHeader() {
     <header class="navbar">
       <a href="/" class="brand" aria-label="elgato.lol, inicio">
         <span class="brand-mark">${icon("cat")}</span>
-        <span><span class="brand-name">elgato.lol</span><span class="brand-sub">Servicios digitales</span></span>
+        <span>
+          <span class="brand-name">elgato.lol</span>
+          <span class="brand-sub">Servicios digitales</span>
+        </span>
       </a>
+
       <nav class="nav-links" aria-label="Navegación principal">
         ${links.map(([url, label, key]) =>
           `<a href="${url}" class="${page === key ? "active" : ""}">${label}</a>`
         ).join("")}
       </nav>
+
       <a class="header-cart" href="/carrito.html">
         ${icon("cart")} Carrito (<span class="cart-count">0</span>)
       </a>
@@ -125,15 +151,23 @@ function renderFooter() {
       <div class="footer-inner">
         <a href="/" class="brand">
           <span class="brand-mark">${icon("cat")}</span>
-          <span><span class="brand-name">elgato.lol</span><span class="brand-sub">Más que una tienda, un universo.</span></span>
+          <span>
+            <span class="brand-name">elgato.lol</span>
+            <span class="brand-sub">Más que una tienda, un universo.</span>
+          </span>
         </a>
+
         <nav class="footer-links" aria-label="Enlaces del pie de página">
           <a href="/">Inicio</a>
           <a href="/tienda.html">Tienda</a>
           <a href="/como-funciona.html">Cómo funciona</a>
           <a href="/soporte.html">Soporte</a>
         </nav>
-        <div class="footer-copy">© ${new Date().getFullYear()} elgato.lol<br>Hecho con <strong>cuidado por SrCat</strong></div>
+
+        <div class="footer-copy">
+          © ${new Date().getFullYear()} elgato.lol<br>
+          Hecho con <strong>cuidado por SrCat</strong>
+        </div>
       </div>
     </footer>`;
 }
@@ -144,18 +178,29 @@ function productCard(product) {
       <a href="/producto.html?id=${encodeURIComponent(product.id)}" aria-label="Ver ${escapeHtml(product.name)}">
         <div class="product-image-wrap">
           ${product.badge ? `<span class="product-badge">${escapeHtml(product.badge)}</span>` : ""}
-          <img class="product-image" src="${escapeHtml(product.image)}"
-            alt="${escapeHtml(product.name)}" loading="lazy"
-            onerror="this.style.display='none';this.parentElement.classList.add('image-missing')">
+          <img
+            class="product-image"
+            src="${escapeHtml(product.image)}"
+            alt="${escapeHtml(product.name)}"
+            loading="lazy"
+            onerror="this.style.display='none';this.parentElement.classList.add('image-missing')"
+          >
         </div>
       </a>
+
       <div class="product-content">
         <div class="product-category">${escapeHtml(product.category)}</div>
         <h3><a href="/producto.html?id=${encodeURIComponent(product.id)}">${escapeHtml(product.name)}</a></h3>
         <p class="product-description">${escapeHtml(product.short)}</p>
         <div class="product-price">${money(product.price, product.currency)} <small>MXN</small></div>
-        <button class="button primary" type="button" data-add="${escapeHtml(product.id)}">
-          ${icon("cart")} Añadir al carrito
+
+        <button
+          class="button primary"
+          type="button"
+          data-add="${escapeHtml(product.id)}"
+          aria-label="Añadir ${escapeHtml(product.name)} al carrito"
+        >
+          ${icon("cart")} Añadir
         </button>
       </div>
     </article>`;
@@ -187,9 +232,13 @@ function renderShop() {
   function update() {
     const term = (search?.value || "").trim().toLowerCase();
     const selectedCategory = category?.value || "all";
+
     let filtered = allProducts.filter(product => {
       const matchesText = [
-        product.name, product.category, product.short, product.description
+        product.name,
+        product.category,
+        product.short,
+        product.description
       ].join(" ").toLowerCase().includes(term);
 
       return matchesText &&
@@ -197,16 +246,25 @@ function renderShop() {
     });
 
     switch (sort?.value) {
-      case "price-low": filtered.sort((a, b) => a.price - b.price); break;
-      case "price-high": filtered.sort((a, b) => b.price - a.price); break;
-      case "name": filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "price-low":
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case "name":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
     }
 
     target.innerHTML = filtered.length
       ? filtered.map(productCard).join("")
       : `<div class="empty-state">No encontramos productos con esos filtros.</div>`;
 
-    if (count) count.textContent = `${filtered.length} producto(s) en el catálogo.`;
+    if (count) {
+      count.textContent = `${filtered.length} producto(s) en el catálogo.`;
+    }
+
     bindAddButtons(target);
   }
 
@@ -240,20 +298,32 @@ function renderProductDetail() {
 
   target.innerHTML = `
     <div class="detail-image">
-      <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}"
-        onerror="this.style.display='none'">
+      <img
+        src="${escapeHtml(product.image)}"
+        alt="${escapeHtml(product.name)}"
+        onerror="this.style.display='none'"
+      >
     </div>
+
     <div class="detail-copy">
       <span class="eyebrow">${escapeHtml(product.category)}</span>
       <h1>${escapeHtml(product.name)}</h1>
       <p>${escapeHtml(product.description)}</p>
+
       <div class="detail-price">${money(product.price, product.currency)} <small>MXN</small></div>
+
       <ul class="feature-list">
         ${product.features.map(feature => `<li>${escapeHtml(feature)}</li>`).join("")}
       </ul>
-      <div class="notice panel">Producto de catálogo de demostración. Comprueba disponibilidad y condiciones antes de publicar una oferta real.</div>
+
+      <div class="notice panel">
+        Producto de catálogo de demostración. Comprueba disponibilidad y condiciones antes de publicar una oferta real.
+      </div>
+
       <div class="detail-actions">
-        <button class="button primary" type="button" data-add="${escapeHtml(product.id)}">${icon("cart")} Añadir al carrito</button>
+        <button class="button primary" type="button" data-add="${escapeHtml(product.id)}">
+          ${icon("cart")} Añadir al carrito
+        </button>
         <a class="button secondary" href="/tienda.html">Seguir explorando</a>
       </div>
     </div>`;
@@ -265,24 +335,35 @@ function renderCart() {
   const target = $("#cart-items");
   if (!target) return;
 
-  const cart = getCart();
-
   function update() {
     const currentCart = getCart();
+
     const items = currentCart.map(item => ({
       ...item,
       product: allProducts.find(product => product.id === item.id)
     })).filter(item => item.product);
 
-    const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    const total = items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
 
     target.innerHTML = items.length ? items.map(item => `
       <article class="cart-row">
-        <img src="${escapeHtml(item.product.image)}" alt="${escapeHtml(item.product.name)}"
-          onerror="this.style.display='none'">
+        <img
+          src="${escapeHtml(item.product.image)}"
+          alt="${escapeHtml(item.product.name)}"
+          onerror="this.style.display='none'"
+        >
+
         <div>
-          <h3><a href="/producto.html?id=${encodeURIComponent(item.id)}">${escapeHtml(item.product.name)}</a></h3>
+          <h3>
+            <a href="/producto.html?id=${encodeURIComponent(item.id)}">
+              ${escapeHtml(item.product.name)}
+            </a>
+          </h3>
           <p>${money(item.product.price)} MXN por unidad</p>
+
           <div class="quantity-control">
             <button type="button" data-quantity="${escapeHtml(item.id)}" data-change="-1" aria-label="Restar una unidad">−</button>
             <span>${item.quantity}</span>
@@ -290,9 +371,16 @@ function renderCart() {
             <button type="button" class="remove-button" data-remove="${escapeHtml(item.id)}">Quitar</button>
           </div>
         </div>
-        <div class="cart-line-total">${money(item.product.price * item.quantity)}<br><small>MXN</small></div>
+
+        <div class="cart-line-total">
+          ${money(item.product.price * item.quantity)}<br><small>MXN</small>
+        </div>
       </article>`).join("")
-      : `<div class="empty-state"><h2>Tu carrito está vacío</h2><p>Explora la tienda para añadir productos.</p><a class="button primary" href="/tienda.html">Ir a la tienda</a></div>`;
+      : `<div class="empty-state">
+          <h2>Tu carrito está vacío</h2>
+          <p>Explora la tienda para añadir productos.</p>
+          <a class="button primary" href="/tienda.html">Ir a la tienda</a>
+        </div>`;
 
     $("#cart-subtotal").textContent = `${money(total)} MXN`;
     $("#cart-total").textContent = `${money(total)} MXN`;
@@ -301,8 +389,11 @@ function renderCart() {
       button.addEventListener("click", () => {
         const id = button.dataset.quantity;
         const change = Number(button.dataset.change);
+
         const next = getCart().map(item =>
-          item.id === id ? { ...item, quantity: item.quantity + change } : item
+          item.id === id
+            ? { ...item, quantity: item.quantity + change }
+            : item
         ).filter(item => item.quantity > 0 && item.quantity <= 10);
 
         saveCart(next);
@@ -321,6 +412,7 @@ function renderCart() {
   update();
 
   const form = $("#checkout-form");
+
   form?.addEventListener("submit", async event => {
     event.preventDefault();
 
@@ -346,7 +438,10 @@ function renderCart() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "No se pudo crear el pedido.");
+
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo crear el pedido.");
+      }
 
       result.textContent =
         `Pedido de prueba: ${data.orderId}. Total estimado: ${money(data.total)} MXN. ` +
@@ -381,13 +476,25 @@ function setupSupportForm() {
 async function loadProducts() {
   try {
     const response = await fetch("/api/products");
-    if (!response.ok) throw new Error("Error cargando productos");
+
+    if (!response.ok) {
+      throw new Error("Error cargando productos");
+    }
+
     const data = await response.json();
     allProducts = Array.isArray(data.products) ? data.products : [];
   } catch {
     allProducts = [];
+
     const grid = $("#featured-products, #shop-products");
-    if (grid) grid.innerHTML = `<div class="empty-state">No se pudo cargar el catálogo. Comprueba que estás ejecutando la web con Vercel.</div>`;
+
+    if (grid) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          No se pudo cargar el catálogo. Comprueba que estás ejecutando la web con Vercel.
+        </div>`;
+    }
+
     return;
   }
 
