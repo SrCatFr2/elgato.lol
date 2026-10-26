@@ -6,55 +6,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080914">
   <meta name="referrer" content="no-referrer">
-  <title>Carrito — elgato.lol</title>
+
+  <title>Mi carrito — elgato.lol</title>
+  <meta
+    name="description"
+    content="Revisa tu pedido digital y continúa al pago con criptomonedas."
+  >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 
 <body data-page="cart">
+  <div class="ambient ambient-purple" aria-hidden="true"></div>
+  <div class="ambient ambient-blue" aria-hidden="true"></div>
+
   <div id="site-header"></div>
 
   <main class="page-wrap">
+    <nav class="breadcrumbs" aria-label="Ruta de navegación">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Carrito</span>
+    </nav>
+
     <section class="page-banner compact-banner">
-      <span class="eyebrow">TU SELECCIÓN</span>
+      <span class="eyebrow">
+        <span class="pulse" aria-hidden="true"></span>
+        TU SELECCIÓN
+      </span>
+
       <h1>Tu <span>carrito.</span></h1>
-      <p>Revisa los productos antes de crear tu factura de pago cripto.</p>
+
+      <p>
+        Revisa tus productos y el total antes de continuar al checkout
+        seguro de criptomonedas.
+      </p>
     </section>
 
-    <section class="cart-layout">
-      <div id="cart-items" class="cart-items panel"></div>
+    <section class="cart-layout" aria-label="Tu pedido">
+      <div id="cart-items" class="cart-items panel" aria-live="polite">
+        <div class="loading">
+          <span class="loading-star" aria-hidden="true">✦</span>
+          Cargando tu carrito...
+        </div>
+      </div>
 
       <aside class="cart-summary panel">
-        <span class="eyebrow">RESUMEN</span>
-        <h2>Tu pedido</h2>
+        <span class="eyebrow">RESUMEN DEL PEDIDO</span>
+        <h2>Tu compra</h2>
 
         <div class="summary-line">
-          <span>Productos</span>
-          <strong id="cart-subtotal">$0 MXN</strong>
+          <span>Subtotal</span>
+          <strong id="cart-subtotal">$0.00 MXN</strong>
         </div>
 
         <div class="summary-line">
-          <span>Pago</span>
+          <span>Forma de pago</span>
           <strong>Criptomonedas</strong>
         </div>
 
+        <div class="summary-line">
+          <span>Entrega</span>
+          <strong>Digital</strong>
+        </div>
+
         <div class="summary-total">
-          <span>Total</span>
-          <strong id="cart-total">$0 MXN</strong>
+          <span>Total estimado</span>
+          <strong id="cart-total">$0.00 MXN</strong>
         </div>
 
         <form id="checkout-form">
           <button class="button primary full" type="submit">
-            Pagar con criptomonedas →
+            Pagar con criptomonedas
+            <span aria-hidden="true">↗</span>
           </button>
         </form>
 
         <p class="form-note">
-          El pago se completa en el checkout de BTCPay. La entrega se libera
-          tras confirmar el pago. Guarda el enlace de tu pedido al regresar.
+          El importe se calcula en el servidor. Después continuarás a
+          NOWPayments para elegir una criptomoneda y completar el pago.
+          La entrega solo se habilita cuando el pago se confirme.
         </p>
 
-        <div id="checkout-result" aria-live="polite"></div>
+        <div id="checkout-result" role="status" aria-live="polite"></div>
+
+        <div class="panel-callout">
+          <span class="icon" aria-hidden="true">◇</span>
+          <div>
+            <strong>Antes de pagar</strong>
+            <p>
+              Comprueba la cantidad y la red de la criptomoneda en el
+              checkout. No envíes fondos a una dirección distinta de
+              la que te muestre el proveedor.
+            </p>
+          </div>
+        </div>
+
+        <a class="button secondary full" href="/tienda.html">
+          Seguir comprando
+        </a>
       </aside>
     </section>
   </main>
