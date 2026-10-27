@@ -1,371 +1,210 @@
-
 /* ==========================================================
-   ELGATO.LOL — LIQUID GLASS + PURPLE RAIN
-   Canvas rain · 3D tilt · cursor reflections · scroll reveals
+   ELGATO.LOL — FINAL INTERACTIVE EFFECTS
+   Animated purple rain · soft particles · glass reflections
+   3D perspective · reveal-on-scroll · visible load status
    ========================================================== */
 (() => {
   "use strict";
 
   const body = document.body;
-
-  // Este script solo se utiliza en la portada.
   if (!body.classList.contains("home-page") && location.pathname === "/") {
     body.classList.add("home-page");
   }
-
   if (!body.classList.contains("home-page")) return;
 
   const canvas = document.getElementById("rain-canvas");
-  const ctx = canvas && canvas.getContext
-    ? canvas.getContext("2d", { alpha: true })
-    : null;
-
+  const ctx = canvas?.getContext?.("2d", { alpha: true });
   if (!canvas || !ctx) {
-    console.error(
-      "[Elgato.lol] No se encontró el Canvas de lluvia o no se pudo crear su contexto 2D."
-    );
+    console.error("[Elgato.lol] Falta #rain-canvas o el contexto 2D.");
     return;
   }
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
+  const smallScreen = matchMedia("(max-width: 700px)").matches;
+  const noHover = matchMedia("(hover: none)").matches;
 
-  const smallScreen = window.matchMedia("(max-width: 700px)").matches;
-  const noHover = window.matchMedia("(hover: none)").matches;
-
-  // Fuerza las capas correctas por encima del fondo OLED.
+  // IMPORTANTE: la lluvia no se detiene por prefers-reduced-motion.
+  // Las animaciones se pausan únicamente cuando la pestaña no es visible.
   Object.assign(canvas.style, {
-    position: "fixed",
-    inset: "0",
-    width: "100%",
-    height: "100%",
-    zIndex: "1",
-    display: "block",
-    opacity: "0.9",
-    pointerEvents: "none"
+    position: "fixed", inset: "0", width: "100%", height: "100%",
+    zIndex: "0", display: "block", visibility: "visible",
+    opacity: "0.83", pointerEvents: "none"
   });
-
-  document.querySelectorAll(".atmosphere").forEach((element) => {
-    element.style.zIndex = "0";
-    element.style.pointerEvents = "none";
-  });
-
-  const vignette = document.querySelector(".page-vignette");
-
-  if (vignette) {
-    vignette.style.zIndex = "2";
-    vignette.style.pointerEvents = "none";
-  }
 
   const shell = document.querySelector(".home-shell");
-
-  if (shell) {
-    shell.style.position = "relative";
-    shell.style.zIndex = "3";
-  }
-
+  if (shell) Object.assign(shell.style, { position: "relative", zIndex: "3" });
   const header = document.getElementById("site-header");
-
-  if (header) {
-    header.style.position = "relative";
-    header.style.zIndex = "30";
-  }
-
+  if (header) Object.assign(header.style, { position: "relative", zIndex: "30" });
   const footer = document.getElementById("site-footer");
-
-  if (footer) {
-    footer.style.position = "relative";
-    footer.style.zIndex = "3";
-  }
-
-  /* =========================
-     LLUVIA MORADA EN CANVAS
-     ========================= */
+  if (footer) Object.assign(footer.style, { position: "relative", zIndex: "3" });
+  document.querySelectorAll(".atmosphere").forEach((el) => {
+    el.style.zIndex = "0";
+    el.style.pointerEvents = "none";
+  });
+  const vignette = document.querySelector(".page-vignette");
+  if (vignette) Object.assign(vignette.style, { zIndex: "1", pointerEvents: "none" });
 
   let width = 1;
   let height = 1;
   let pixelRatio = 1;
   let drops = [];
-  let particles = [];
-  let raf = 0;
-  let lastTime = 0;
+  let motes = [];
+  let animationFrame = 0;
+  let previousTime = 0;
   let running = false;
 
-  const config = {
-    density: smallScreen ? 70 : 155,
-    minSpeed: 95,
-    maxSpeed: 255,
-    minLength: 7,
-    maxLength: 24
+  const rain = {
+    count: smallScreen ? 68 : 148,
+    minSpeed: 105,
+    maxSpeed: 290,
+    minLength: 8,
+    maxLength: 29
   };
+  const rand = (min, max) => Math.random() * (max - min) + min;
 
-  const random = (min, max) =>
-    Math.random() * (max - min) + min;
-
-  function makeDrop(initial = true) {
+  function newDrop(startAnywhere = true) {
     const depth = Math.random();
-
     return {
-      x: random(0, width),
-      y: initial ? random(-height, height) : random(-70, -12),
+      x: rand(0, width),
+      y: startAnywhere ? rand(-height, height) : rand(-65, -8),
       depth,
-      length:
-        random(config.minLength, config.maxLength) *
-        (0.55 + depth * 1.05),
-      speed:
-        random(config.minSpeed, config.maxSpeed) *
-        (0.55 + depth * 0.75),
-      drift: random(-20, 12),
-      alpha:
-        random(0.18, 0.50) *
-        (0.45 + depth * 0.8),
-      lineWidth:
-        random(0.45, 1.1) *
-        (0.5 + depth * 0.7),
-      glow: depth > 0.66
+      length: rand(rain.minLength, rain.maxLength) * (0.48 + depth * 1.05),
+      speed: rand(rain.minSpeed, rain.maxSpeed) * (0.50 + depth * 0.78),
+      drift: rand(-20, 13),
+      alpha: rand(0.23, 0.55) * (0.48 + depth * 0.77),
+      thickness: rand(0.45, 1.12) * (0.52 + depth * 0.65),
+      close: depth > 0.65
     };
   }
 
-  function makeParticle() {
+  function newMote() {
     return {
-      x: random(0, width),
-      y: random(0, height),
-      r: random(0.45, 1.35),
-      phase: random(0, Math.PI * 2),
-      speed: random(0.5, 1.4),
-      alpha: random(0.12, 0.38)
+      x: rand(0, width), y: rand(0, height), radius: rand(0.45, 1.45),
+      phase: rand(0, Math.PI * 2), speed: rand(0.5, 1.4), alpha: rand(0.1, 0.38)
     };
   }
 
   function resize() {
     width = Math.max(1, window.innerWidth);
     height = Math.max(1, window.innerHeight);
-
     pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
-
     canvas.width = Math.round(width * pixelRatio);
     canvas.height = Math.round(height * pixelRatio);
-
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-    drops = Array.from(
-      { length: config.density },
-      () => makeDrop(true)
-    );
-
-    particles = Array.from(
-      { length: smallScreen ? 18 : 38 },
-      makeParticle
-    );
-
-    // La lluvia también se ve en modo de movimiento reducido.
-    if (reducedMotion) drawStatic();
+    drops = Array.from({ length: rain.count }, () => newDrop(true));
+    motes = Array.from({ length: smallScreen ? 16 : 38 }, newMote);
+    if (!running) drawStatic();
   }
 
   function drawStatic() {
     ctx.clearRect(0, 0, width, height);
-
     for (const drop of drops) {
       ctx.beginPath();
-
-      ctx.strokeStyle = drop.glow
-        ? `rgba(210,180,255,${Math.min(0.65, drop.alpha)})`
-        : `rgba(159,118,238,${Math.min(0.5, drop.alpha)})`;
-
-      ctx.lineWidth = drop.lineWidth;
+      ctx.strokeStyle = drop.close
+        ? `rgba(215,190,255,${drop.alpha})`
+        : `rgba(159,118,238,${drop.alpha * 0.8})`;
+      ctx.lineWidth = drop.thickness;
       ctx.moveTo(drop.x, drop.y);
-      ctx.lineTo(drop.x + 2.5, drop.y + drop.length);
+      ctx.lineTo(drop.x + 2, drop.y + drop.length);
       ctx.stroke();
     }
-
-    for (const particle of particles) {
+    for (const mote of motes) {
       ctx.beginPath();
-      ctx.fillStyle = `rgba(210,190,255,${particle.alpha * 0.6})`;
-      ctx.arc(
-        particle.x,
-        particle.y,
-        particle.r,
-        0,
-        Math.PI * 2
-      );
+      ctx.fillStyle = `rgba(207,184,255,${mote.alpha * 0.65})`;
+      ctx.arc(mote.x, mote.y, mote.radius, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
-  function draw(time) {
+  function render(time) {
     if (!running || document.hidden) {
-      raf = 0;
+      animationFrame = 0;
       return;
     }
 
-    const delta = lastTime
-      ? Math.min((time - lastTime) / 1000, 0.04)
-      : 0.016;
-
-    lastTime = time;
-
+    const dt = previousTime ? Math.min((time - previousTime) / 1000, 0.035) : 0.016;
+    previousTime = time;
     ctx.clearRect(0, 0, width, height);
 
-    // Capas de lluvia: las gotas más brillantes parecen estar más cerca.
     for (const drop of drops) {
-      const x2 = drop.x + drop.length * 0.11;
+      const x2 = drop.x + drop.length * 0.10;
       const y2 = drop.y + drop.length;
-
-      const rgb = drop.glow
-        ? "216,190,255"
-        : "157,117,237";
-
-      const gradient = ctx.createLinearGradient(
-        drop.x,
-        drop.y,
-        x2,
-        y2
-      );
-
+      const rgb = drop.close ? "214,188,255" : "151,111,231";
+      const gradient = ctx.createLinearGradient(drop.x, drop.y, x2, y2);
       gradient.addColorStop(0, `rgba(${rgb},0)`);
-      gradient.addColorStop(
-        0.42,
-        `rgba(${rgb},${drop.alpha * 0.45})`
-      );
+      gradient.addColorStop(0.45, `rgba(${rgb},${drop.alpha * 0.48})`);
       gradient.addColorStop(1, `rgba(${rgb},${drop.alpha})`);
 
       ctx.beginPath();
       ctx.strokeStyle = gradient;
-      ctx.lineWidth = drop.lineWidth;
+      ctx.lineWidth = drop.thickness;
       ctx.lineCap = "round";
-
-      if (drop.glow) {
-        ctx.shadowBlur = 9;
-        ctx.shadowColor = "rgba(157,106,255,.75)";
+      if (drop.close) {
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "rgba(161,105,255,.7)";
       }
-
       ctx.moveTo(drop.x, drop.y);
       ctx.lineTo(x2, y2);
       ctx.stroke();
-
       ctx.shadowBlur = 0;
 
-      drop.y += drop.speed * delta;
-      drop.x += drop.drift * delta;
-
-      if (
-        drop.y > height + drop.length ||
-        drop.x < -35 ||
-        drop.x > width + 35
-      ) {
-        Object.assign(drop, makeDrop(false));
-        drop.x = Math.max(0, Math.min(width, drop.x));
+      drop.y += drop.speed * dt;
+      drop.x += drop.drift * dt;
+      if (drop.y > height + drop.length || drop.x < -35 || drop.x > width + 35) {
+        Object.assign(drop, newDrop(false));
       }
     }
 
-    // Partículas tenues que pulsan lentamente al fondo.
-    for (const particle of particles) {
-      const pulse =
-        0.6 +
-        Math.sin(time * 0.0007 * particle.speed + particle.phase) * 0.4;
-
+    for (const mote of motes) {
+      const pulse = 0.56 + Math.sin(time * 0.0008 * mote.speed + mote.phase) * 0.44;
       ctx.beginPath();
-      ctx.fillStyle =
-        `rgba(217,196,255,${particle.alpha * pulse})`;
-
-      ctx.arc(
-        particle.x,
-        particle.y,
-        particle.r * (0.8 + pulse * 0.3),
-        0,
-        Math.PI * 2
-      );
-
+      ctx.fillStyle = `rgba(218,198,255,${mote.alpha * pulse})`;
+      ctx.arc(mote.x, mote.y, mote.radius * (0.8 + pulse * 0.28), 0, Math.PI * 2);
       ctx.fill();
     }
 
-    raf = window.requestAnimationFrame(draw);
+    animationFrame = requestAnimationFrame(render);
   }
 
-  function start() {
-    if (reducedMotion || running || document.hidden) return;
-
+  function startRain() {
+    if (running || document.hidden) return;
     running = true;
-    lastTime = 0;
-    raf = window.requestAnimationFrame(draw);
+    previousTime = 0;
+    animationFrame = requestAnimationFrame(render);
   }
 
-  function stop() {
+  function stopRain() {
     running = false;
-
-    if (raf) {
-      window.cancelAnimationFrame(raf);
-    }
-
-    raf = 0;
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
   }
 
   resize();
-
-  if (reducedMotion) {
-    drawStatic();
-  } else {
-    start();
-  }
-
-  let resizeTimer = 0;
-
-  window.addEventListener("resize", () => {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(resize, 100);
-  }, { passive: true });
-
+  startRain();
+  window.addEventListener("resize", resize, { passive: true });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      stop();
-    } else if (reducedMotion) {
-      drawStatic();
-    } else {
-      start();
-    }
+    if (document.hidden) stopRain();
+    else startRain();
   });
 
-  /* =========================
-     REFLEJOS Y EFECTO 3D
-     ========================= */
-
-  function bindTilt(element, max = 5) {
-    if (
-      !element ||
-      element.dataset.elgatoTiltBound === "1" ||
-      reducedMotion ||
-      noHover
-    ) {
-      return;
-    }
-
-    element.dataset.elgatoTiltBound = "1";
+  /* Moving liquid reflection / gentle 3D tilt. */
+  function attachTilt(element, strength = 5) {
+    if (!element || element.dataset.elgatoTilt === "true" || noHover) return;
+    element.dataset.elgatoTilt = "true";
 
     element.addEventListener("pointermove", (event) => {
       const rect = element.getBoundingClientRect();
-
-      const x = Math.max(
-        0,
-        Math.min(1, (event.clientX - rect.left) / rect.width)
-      );
-
-      const y = Math.max(
-        0,
-        Math.min(1, (event.clientY - rect.top) / rect.height)
-      );
-
+      if (!rect.width || !rect.height) return;
+      const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
       element.style.setProperty("--mouse-x", `${x * 100}%`);
       element.style.setProperty("--mouse-y", `${y * 100}%`);
-      element.style.setProperty("--tilt-x", `${(x - 0.5) * max}deg`);
-      element.style.setProperty("--tilt-y", `${(0.5 - y) * max}deg`);
-
+      element.style.setProperty("--tilt-x", `${(x - 0.5) * strength}deg`);
+      element.style.setProperty("--tilt-y", `${(0.5 - y) * strength}deg`);
       element.classList.add("is-tilting");
     });
 
     element.addEventListener("pointerleave", () => {
       element.classList.remove("is-tilting");
-
       element.style.setProperty("--mouse-x", "50%");
       element.style.setProperty("--mouse-y", "45%");
       element.style.setProperty("--tilt-x", "0deg");
@@ -373,69 +212,42 @@
     });
   }
 
-  bindTilt(document.querySelector(".hero-visual"), 5);
-
-  function bindDynamicCards(root = document) {
-    root.querySelectorAll(
-      ".liquid-category, .home-product-grid .product-card"
-    ).forEach((card, index) => {
-      bindTilt(card, 4);
-      card.style.setProperty("--stagger-index", String(index % 4));
-      card.classList.add("has-stagger");
+  function bindCards(root = document) {
+    root.querySelectorAll(".liquid-category, .home-product-grid .product-card").forEach((node, i) => {
+      attachTilt(node, 4);
+      node.style.setProperty("--stagger-index", String(i % 4));
+      node.classList.add("has-stagger");
     });
   }
 
-  bindDynamicCards();
+  attachTilt(document.querySelector(".hero-visual"), 5);
+  bindCards();
 
-  // Los productos destacados se insertan dinámicamente desde app.js.
   const featured = document.getElementById("featured-products");
-
   if (featured && "MutationObserver" in window) {
-    const productObserver = new MutationObserver(() => {
-      bindDynamicCards(featured);
-    });
-
-    productObserver.observe(featured, {
+    new MutationObserver(() => bindCards(featured)).observe(featured, {
       childList: true,
       subtree: true
     });
   }
 
-  /* =========================
-     REVELAR SECCIONES AL BAJAR
-     ========================= */
-
-  if (!reducedMotion && "IntersectionObserver" in window) {
-    const revealNodes = document.querySelectorAll(
-      ".glass-benefits, .home-section, .home-final-panel"
-    );
-
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
+  /* Reveal sections without hiding anything if observer is unavailable. */
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "0px 0px -30px 0px"
+          obs.unobserve(entry.target);
+        }
       }
-    );
+    }, { threshold: 0.10, rootMargin: "0px 0px -24px 0px" });
 
-    revealNodes.forEach((node) => {
+    document.querySelectorAll(".glass-benefits, .home-section, .home-final-panel").forEach((node) => {
       node.classList.add("elgato-reveal");
-      revealObserver.observe(node);
+      observer.observe(node);
     });
   }
 
-  // Confirmación visible en la consola de que este archivo se ejecutó.
   body.classList.add("elgato-effects-ready");
-
-  console.info(
-    "%cElgato.lol effects loaded ✓",
-    "color:#c7a8ff;font-weight:bold"
-  );
+  console.info("%cElgato.lol: liquid effects running ✓", "color:#c9a8ff;font-weight:bold");
 })();
