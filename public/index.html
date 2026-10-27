@@ -5,48 +5,253 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#050407">
-
-  <meta name="description" content="Elgato.lol: cuentas full de alta calidad y productos digitales. Explora el catálogo, conoce cada opción y encuentra tu próxima cuenta.">
+  <meta name="color-scheme" content="dark">
 
   <title>Elgato.lol — Cuentas full de alta calidad</title>
+  <meta
+    name="description"
+    content="Elgato.lol: cuentas full de alta calidad y productos digitales. Explora nuestro catálogo y encuentra tu próxima cuenta."
+  >
   <link rel="canonical" href="https://elgato.lol/">
 
+  <!-- Icono de la pestaña: gato de Elgato -->
+  <link rel="icon" type="image/svg+xml" href="/assets/icon-cat.svg?v=2">
+  <link rel="shortcut icon" href="/assets/icon-cat.svg?v=2">
+
+  <!-- Vista previa al compartir en Discord y otras redes -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Elgato.lol">
   <meta property="og:title" content="Elgato.lol — Cuentas full de alta calidad">
-  <meta property="og:description" content="Cuentas full de alta calidad y productos digitales. Explora el catálogo de Elgato.lol.">
+  <meta
+    property="og:description"
+    content="Tu tienda de cuentas full de alta calidad y productos digitales. Explora el catálogo de Elgato.lol."
+  >
   <meta property="og:url" content="https://elgato.lol/">
   <meta property="og:image" content="https://elgato.lol/assets/og-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Elgato.lol — tienda de cuentas full">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Elgato.lol — Cuentas full de alta calidad">
-  <meta name="twitter:description" content="Cuentas full de alta calidad y productos digitales.">
+  <meta
+    name="twitter:description"
+    content="Cuentas full y productos digitales en Elgato.lol."
+  >
   <meta name="twitter:image" content="https://elgato.lol/assets/og-preview.png">
 
+  <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/home-redesign.css">
+  <!-- Diseño general y efectos -->
+  <link rel="stylesheet" href="/styles.css?v=5">
+  <link rel="stylesheet" href="/home-redesign.css?v=5">
+
+  <!-- Corrección de capas del Canvas y decoración felina -->
+  <style>
+    body.home-page {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      overflow-x: clip;
+      background: #050407 !important;
+    }
+
+    #rain-canvas {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 0 !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      opacity: .78;
+      pointer-events: none !important;
+    }
+
+    body.home-page .atmosphere {
+      z-index: 0 !important;
+      pointer-events: none !important;
+    }
+
+    body.home-page .page-vignette {
+      z-index: 1 !important;
+      pointer-events: none !important;
+    }
+
+    body.home-page #site-header {
+      position: relative;
+      z-index: 30;
+    }
+
+    body.home-page .home-shell {
+      position: relative;
+      z-index: 2;
+    }
+
+    body.home-page #site-footer {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Mascota felina de la marca */
+    .hero-cat-signature {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 24px;
+      padding: 8px 12px 8px 8px;
+      border: 1px solid rgba(192, 160, 255, .18);
+      border-radius: 13px;
+      background: rgba(23, 16, 34, .52);
+      box-shadow: inset 0 1px rgba(255,255,255,.045);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+    }
+
+    .hero-cat-signature img {
+      display: block;
+      width: 33px;
+      height: 33px;
+      border: 1px solid rgba(200, 170, 255, .25);
+      border-radius: 10px;
+      object-fit: cover;
+      background: #100b19;
+    }
+
+    .hero-cat-signature-copy {
+      display: grid;
+      gap: 3px;
+    }
+
+    .hero-cat-signature-copy strong {
+      color: #e8dcff;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 10px;
+      letter-spacing: .02em;
+    }
+
+    .hero-cat-signature-copy small {
+      color: #9588a9;
+      font-size: 9px;
+    }
+
+    .hero-cat-paw {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 3px;
+      color: #c0a1ff;
+      opacity: .8;
+      transform: rotate(-12deg);
+    }
+
+    .hero-cat-paw svg {
+      display: block;
+      width: 21px;
+      height: 21px;
+    }
+
+    /* Emblema de gato en el panel principal */
+    .cat-emblem-label {
+      position: absolute;
+      top: 66px;
+      left: 50%;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(222, 207, 255, .76);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      white-space: nowrap;
+      transform: translateX(-50%);
+    }
+
+    .cat-emblem-label svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .cat-paw-decoration {
+      position: absolute;
+      z-index: 2;
+      width: 25px;
+      height: 25px;
+      color: rgba(195, 163, 255, .2);
+      pointer-events: none;
+      animation: paw-drift 7s ease-in-out infinite;
+    }
+
+    .cat-paw-decoration.paw-a {
+      top: 20%;
+      right: 13%;
+      transform: rotate(18deg);
+    }
+
+    .cat-paw-decoration.paw-b {
+      bottom: 23%;
+      left: 9%;
+      width: 17px;
+      height: 17px;
+      animation-delay: -3s;
+      transform: rotate(-21deg);
+    }
+
+    @keyframes paw-drift {
+      0%, 100% { opacity: .4; translate: 0 0; }
+      50% { opacity: .9; translate: 0 -7px; }
+    }
+
+    @media (max-width: 700px) {
+      .hero-cat-signature {
+        margin-top: 19px;
+      }
+
+      .cat-emblem-label {
+        top: 57px;
+        font-size: 7px;
+      }
+
+      .cat-paw-decoration.paw-a {
+        right: 8%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cat-paw-decoration {
+        animation: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="home-page" data-page="home">
+
+  <!-- Fondo OLED y lluvia ambiental -->
   <canvas id="rain-canvas" class="rain-canvas" aria-hidden="true"></canvas>
+
   <div class="atmosphere atmosphere-purple" aria-hidden="true"></div>
   <div class="atmosphere atmosphere-blue" aria-hidden="true"></div>
   <div class="page-vignette" aria-hidden="true"></div>
 
+  <!-- app.js construye aquí la navegación -->
   <div id="site-header"></div>
 
   <main class="home-shell">
 
+    <!-- HERO -->
     <section class="hero-liquid" aria-labelledby="hero-title">
+
       <div class="hero-grid-overlay" aria-hidden="true"></div>
 
       <div class="hero-copy">
+
         <div class="hero-eyebrow">
           <span class="live-dot"></span>
           <span>ELGATO.LOL</span>
@@ -60,79 +265,156 @@
         </h1>
 
         <p class="hero-description">
-          Una tienda digital con cuentas seleccionadas, detalles claros y
-          una experiencia de compra sin ruido. Encuentra tu próxima cuenta
-          en <strong>elgato.lol</strong>.
+          Tu próxima cuenta empieza aquí. Descubre cuentas full de alta
+          calidad en una tienda digital con una identidad propia, un catálogo
+          organizado y los detalles de cada producto a la vista.
         </p>
 
         <div class="hero-actions">
           <a class="liquid-button liquid-button-primary" href="/tienda.html">
-            Explorar catálogo <span aria-hidden="true">↗</span>
+            Explorar catálogo
+            <span aria-hidden="true">↗</span>
           </a>
 
           <a class="liquid-button liquid-button-ghost" href="#destacados">
-            Ver destacados <span aria-hidden="true">↓</span>
+            Ver destacados
+            <span aria-hidden="true">↓</span>
           </a>
         </div>
 
         <div class="hero-proof-row">
           <div class="proof-item">
-            <span class="proof-icon">✦</span>
+            <span class="proof-icon" aria-hidden="true">✦</span>
             <span>
               <strong>Alta calidad</strong>
-              <small>Productos seleccionados</small>
+              <small>Atención a los detalles</small>
             </span>
           </div>
 
           <div class="proof-divider"></div>
 
           <div class="proof-item">
-            <span class="proof-icon proof-icon-purple">◈</span>
+            <span class="proof-icon proof-icon-purple" aria-hidden="true">◈</span>
             <span>
               <strong>Compra clara</strong>
               <small>Información por producto</small>
             </span>
           </div>
         </div>
+
+        <!-- Firma visual del gato de la marca -->
+        <div class="hero-cat-signature">
+          <img
+            src="/assets/cat-avatar.png"
+            alt="Mascota felina de Elgato.lol"
+            width="33"
+            height="33"
+          >
+
+          <span class="hero-cat-signature-copy">
+            <strong>El gato detrás de la tienda.</strong>
+            <small>Una identidad distinta. Una experiencia digital.</small>
+          </span>
+
+          <span class="hero-cat-paw" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="currentColor">
+              <ellipse cx="16" cy="21" rx="8" ry="6.5"/>
+              <ellipse cx="7.5" cy="12" rx="3" ry="4.2" transform="rotate(-25 7.5 12)"/>
+              <ellipse cx="14.5" cy="8.5" rx="3" ry="4.2" transform="rotate(-7 14.5 8.5)"/>
+              <ellipse cx="22" cy="10.5" rx="3" ry="4.2" transform="rotate(15 22 10.5)"/>
+              <ellipse cx="26" cy="16" rx="2.8" ry="3.8" transform="rotate(30 26 16)"/>
+            </svg>
+          </span>
+        </div>
+
       </div>
 
-      <div class="hero-visual" aria-label="Identidad visual de Elgato.lol">
+      <!-- Panel Liquid Glass con emblema -->
+      <div class="hero-visual" aria-label="Elgato.lol, cuentas full y productos digitales">
+
         <div class="visual-halo halo-one" aria-hidden="true"></div>
         <div class="visual-halo halo-two" aria-hidden="true"></div>
+
         <div class="visual-orbit orbit-one" aria-hidden="true"></div>
         <div class="visual-orbit orbit-two" aria-hidden="true"></div>
+
+        <!-- Huellas decorativas -->
+        <svg class="cat-paw-decoration paw-a" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+          <ellipse cx="16" cy="21" rx="8" ry="6.5"/>
+          <ellipse cx="7.5" cy="12" rx="3" ry="4.2"/>
+          <ellipse cx="14.5" cy="8.5" rx="3" ry="4.2"/>
+          <ellipse cx="22" cy="10.5" rx="3" ry="4.2"/>
+          <ellipse cx="26" cy="16" rx="2.8" ry="3.8"/>
+        </svg>
+
+        <svg class="cat-paw-decoration paw-b" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+          <ellipse cx="16" cy="21" rx="8" ry="6.5"/>
+          <ellipse cx="7.5" cy="12" rx="3" ry="4.2"/>
+          <ellipse cx="14.5" cy="8.5" rx="3" ry="4.2"/>
+          <ellipse cx="22" cy="10.5" rx="3" ry="4.2"/>
+          <ellipse cx="26" cy="16" rx="2.8" ry="3.8"/>
+        </svg>
 
         <div class="visual-topline">
           <span><b></b> DIGITAL GOODS</span>
           <span>EST. ELGATO.LOL</span>
         </div>
 
+        <div class="cat-emblem-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 10 4 3l6 4h4l6-4-1 7a8 8 0 1 1-14 0Z"/>
+            <path d="M9 12h.01M15 12h.01M10 16q2 2 4 0"/>
+          </svg>
+          EL GUARDIÁN DEL CATÁLOGO
+        </div>
+
         <div class="glass-emblem">
           <div class="emblem-reflection" aria-hidden="true"></div>
+
           <img
             src="/assets/logo-hero.png"
-            alt="Logotipo neón de un gato coronado, símbolo de Elgato.lol"
+            alt="Emblema de gato de Elgato.lol"
+            width="250"
+            height="250"
             fetchpriority="high"
           >
+
           <div class="emblem-ring ring-a" aria-hidden="true"></div>
           <div class="emblem-ring ring-b" aria-hidden="true"></div>
         </div>
 
-        <div class="visual-wordmark" aria-hidden="true">
+        <div class="visual-wordmark" aria-label="Elgato.lol">
           elgato<span>.lol</span>
         </div>
 
         <div class="visual-caption">
-          <span class="caption-mark">g.</span>
+          <span class="caption-mark">
+            <img
+              src="/assets/icon-cat.svg"
+              alt=""
+              width="20"
+              height="20"
+            >
+          </span>
+
           <span>
             <strong>ELGATO.LOL</strong>
             <small>Tu próxima cuenta empieza aquí.</small>
           </span>
-          <span class="caption-arrow">↗</span>
+
+          <span class="caption-arrow" aria-hidden="true">↗</span>
         </div>
 
+        <!-- Mascota y detalle flotante -->
         <div class="floating-chip chip-quality">
-          <span class="chip-spark">✧</span>
+          <img
+            src="/assets/cat-avatar.png"
+            alt=""
+            width="34"
+            height="34"
+            style="width:34px;height:34px;object-fit:cover;border-radius:10px;"
+          >
+
           <span>
             <small>NUESTRO ENFOQUE</small>
             <strong>Calidad primero</strong>
@@ -146,19 +428,23 @@
             <strong>Catálogo digital</strong>
           </span>
         </div>
+
       </div>
 
       <div class="hero-scroll-cue">
         <span class="scroll-line"></span>
         <span>DESLIZA PARA EXPLORAR</span>
       </div>
+
     </section>
 
+    <!-- VENTAJAS -->
     <section class="glass-benefits" aria-label="Características de Elgato.lol">
+
       <div class="benefit-cell">
         <span class="benefit-index">01</span>
         <div>
-          <strong>Selecciona tu cuenta</strong>
+          <strong>Encuentra tu cuenta</strong>
           <p>Explora las opciones del catálogo.</p>
         </div>
       </div>
@@ -167,7 +453,7 @@
         <span class="benefit-index">02</span>
         <div>
           <strong>Revisa los detalles</strong>
-          <p>Conoce el producto antes de elegir.</p>
+          <p>Consulta las características y el precio.</p>
         </div>
       </div>
 
@@ -175,15 +461,19 @@
         <span class="benefit-index">03</span>
         <div>
           <strong>Continúa tu pedido</strong>
-          <p>Sigue el proceso que indica la tienda.</p>
+          <p>Sigue las indicaciones de la tienda.</p>
         </div>
       </div>
+
     </section>
 
+    <!-- CATEGORÍAS -->
     <section class="home-section section-categories" aria-labelledby="categories-title">
+
       <div class="section-heading-row">
         <div>
-          <span class="section-kicker">ENCUENTRA TU ESPACIO</span>
+          <span class="section-kicker">EL UNIVERSO ELGATO</span>
+
           <h2 id="categories-title">
             Una tienda.<br>
             <span>Más posibilidades.</span>
@@ -191,12 +481,13 @@
         </div>
 
         <p>
-          Entra al catálogo, compara las opciones y encuentra lo que buscas.
-          Cada producto tiene su propia información y precio.
+          Explora nuestra tienda digital, revisa las opciones
+          disponibles y encuentra el producto que buscas.
         </p>
       </div>
 
       <div class="liquid-category-grid">
+
         <a class="liquid-category category-purple" href="/tienda.html">
           <span class="category-overline">01 / DISCOVER</span>
           <span class="category-symbol symbol-star" aria-hidden="true">✳</span>
@@ -213,7 +504,7 @@
           <span class="category-symbol symbol-cube" aria-hidden="true">◇</span>
           <span class="category-title">Gaming & comunidad</span>
           <span class="category-description">
-            Explora las opciones disponibles en la tienda.
+            Descubre las opciones disponibles en la tienda.
           </span>
           <span class="category-go" aria-hidden="true">↗</span>
           <div class="category-glow" aria-hidden="true"></div>
@@ -229,16 +520,25 @@
           <span class="category-go" aria-hidden="true">↗</span>
           <div class="category-glow" aria-hidden="true"></div>
         </a>
+
       </div>
     </section>
 
-    <section class="home-section section-featured" id="destacados" aria-labelledby="featured-title">
+    <!-- DESTACADOS REALES: APP.JS CARGA ESTOS PRODUCTOS -->
+    <section
+      class="home-section section-featured"
+      id="destacados"
+      aria-labelledby="featured-title"
+    >
+
       <div class="section-heading-row featured-heading">
         <div>
           <span class="section-kicker">EL CATÁLOGO DE ELGATO.LOL</span>
+
           <h2 id="featured-title">
             Destacados<span class="heading-period">.</span>
           </h2>
+
           <p>Descubre algunos de los productos disponibles.</p>
         </div>
 
@@ -247,31 +547,46 @@
         </a>
       </div>
 
-      <div id="featured-products" class="product-grid home-product-grid" aria-live="polite">
+      <div
+        id="featured-products"
+        class="product-grid home-product-grid"
+        aria-live="polite"
+      >
         <div class="home-loading">
           <span class="loading-orb"></span>
           <span>Cargando productos del catálogo...</span>
         </div>
       </div>
+
     </section>
 
-    <section class="home-section section-process" id="como-funciona" aria-labelledby="process-title">
+    <!-- CÓMO FUNCIONA -->
+    <section
+      class="home-section section-process"
+      id="como-funciona"
+      aria-labelledby="process-title"
+    >
+
       <div class="process-intro">
-        <span class="section-kicker">DISEÑADO PARA SER CLARO</span>
+        <span class="section-kicker">SIMPLE DESDE EL PRINCIPIO</span>
+
         <h2 id="process-title">
           De explorar a elegir.<br>
           <span>Sin complicaciones.</span>
         </h2>
+
         <p>
-          Una experiencia simple para descubrir los productos, leer sus
-          características y continuar con tu pedido.
+          Revisa los productos, conoce sus características y sigue
+          los pasos que indica la tienda para continuar con tu pedido.
         </p>
+
         <a href="/como-funciona.html" class="text-link">
-          Cómo funciona la tienda <span aria-hidden="true">↗</span>
+          Cómo funciona <span aria-hidden="true">↗</span>
         </a>
       </div>
 
       <div class="process-glass-list">
+
         <article class="process-glass-item">
           <span class="process-num">01</span>
           <div>
@@ -284,7 +599,7 @@
         <article class="process-glass-item">
           <span class="process-num">02</span>
           <div>
-            <h3>Lee cada detalle</h3>
+            <h3>Lee los detalles</h3>
             <p>Consulta la descripción, las características y el precio.</p>
           </div>
           <span class="process-arrow" aria-hidden="true">◌</span>
@@ -298,33 +613,47 @@
           </div>
           <span class="process-arrow" aria-hidden="true">↗</span>
         </article>
+
       </div>
     </section>
 
-    <section class="home-final-panel">
+    <!-- CTA FINAL CON IDENTIDAD DE MARCA -->
+    <section class="home-final-panel" aria-labelledby="final-title">
+
       <div class="final-panel-glow" aria-hidden="true"></div>
 
-      <div class="final-brand-orb" aria-hidden="true">
-        <img src="/assets/icon-cat.svg" alt="">
+      <div class="final-brand-orb">
+        <img
+          src="/assets/icon-cat.svg"
+          alt=""
+          width="28"
+          height="28"
+          loading="lazy"
+        >
       </div>
 
       <div class="final-panel-copy">
-        <span class="section-kicker">LA SIGUIENTE PARADA: EL CATÁLOGO</span>
-        <h2>Encuentra tu próxima cuenta.</h2>
-        <p>Explora Elgato.lol y elige con la información a la vista.</p>
+        <span class="section-kicker">EL UNIVERSO ELGATO</span>
+        <h2 id="final-title">Encuentra tu próxima cuenta.</h2>
+        <p>Explora Elgato.lol y descubre las opciones del catálogo.</p>
       </div>
 
       <a class="liquid-button liquid-button-primary" href="/tienda.html">
         Entrar a la tienda <span aria-hidden="true">↗</span>
       </a>
+
     </section>
 
   </main>
 
+  <!-- app.js construye aquí el pie de página -->
   <div id="site-footer"></div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="/home-effects.js" defer></script>
-  <script src="/app.js" defer></script>
+  <!-- Efectos primero; el catálogo se carga después -->
+  <script src="/home-effects.js?v=5" defer></script>
+  <script src="/app.js?v=5" defer></script>
+
 </body>
 </html>
