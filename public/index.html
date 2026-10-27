@@ -4,413 +4,327 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#09090d">
+  <meta name="theme-color" content="#050407">
 
-  <meta
-    name="description"
-    content="Elgato.lol: tienda de cuentas full de alta calidad y productos digitales. Explora el catálogo, compara opciones y encuentra tu próxima cuenta."
-  >
+  <meta name="description" content="Elgato.lol: cuentas full de alta calidad y productos digitales. Explora el catálogo, conoce cada opción y encuentra tu próxima cuenta.">
 
   <title>Elgato.lol — Cuentas full de alta calidad</title>
   <link rel="canonical" href="https://elgato.lol/">
 
-  <!-- Vista previa al compartir el enlace -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Elgato.lol">
   <meta property="og:title" content="Elgato.lol — Cuentas full de alta calidad">
-  <meta
-    property="og:description"
-    content="Tu tienda de cuentas full y productos digitales. Explora el catálogo, revisa cada oferta y elige la opción que buscas."
-  >
+  <meta property="og:description" content="Cuentas full de alta calidad y productos digitales. Explora el catálogo de Elgato.lol.">
   <meta property="og:url" content="https://elgato.lol/">
   <meta property="og:image" content="https://elgato.lol/assets/og-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Elgato.lol — cuentas full de alta calidad">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Elgato.lol — Cuentas full de alta calidad">
-  <meta
-    name="twitter:description"
-    content="Tu tienda de cuentas full y productos digitales."
-  >
+  <meta name="twitter:description" content="Cuentas full de alta calidad y productos digitales.">
   <meta name="twitter:image" content="https://elgato.lol/assets/og-preview.png">
 
-  <!-- Tipografía -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Estilos existentes y nuevo diseño de portada -->
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/home-redesign.css">
 </head>
 
 <body class="home-page" data-page="home">
-  <div class="home-noise" aria-hidden="true"></div>
+  <canvas id="rain-canvas" class="rain-canvas" aria-hidden="true"></canvas>
+  <div class="atmosphere atmosphere-purple" aria-hidden="true"></div>
+  <div class="atmosphere atmosphere-blue" aria-hidden="true"></div>
+  <div class="page-vignette" aria-hidden="true"></div>
 
-  <!-- El encabezado lo genera app.js -->
   <div id="site-header"></div>
 
-  <main>
-    <!-- HERO PRINCIPAL -->
-    <section class="home-hero-new" aria-labelledby="main-title">
-      <div class="home-glow hero-glow-one" aria-hidden="true"></div>
-      <div class="home-glow hero-glow-two" aria-hidden="true"></div>
+  <main class="home-shell">
 
-      <div class="home-hero-copy">
-        <div class="home-kicker">
-          <span class="kicker-dot"></span>
-          ELGATO.LOL
-          <span class="kicker-divider">/</span>
-          DIGITAL MARKETPLACE
+    <section class="hero-liquid" aria-labelledby="hero-title">
+      <div class="hero-grid-overlay" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <div class="hero-eyebrow">
+          <span class="live-dot"></span>
+          <span>ELGATO.LOL</span>
+          <i></i>
+          <span>CUENTAS & PRODUCTOS DIGITALES</span>
         </div>
 
-        <h1 id="main-title">
-          Cuentas full de <span>alta calidad.</span>
+        <h1 id="hero-title">
+          Cuentas full.<br>
+          <span class="gradient-word">Calidad que se nota.</span>
         </h1>
 
-        <p class="home-lead">
-          Encuentra cuentas digitales seleccionadas en una tienda creada
-          para comprar con más claridad. Revisa las opciones, conoce sus
-          detalles y elige la que encaje contigo.
+        <p class="hero-description">
+          Una tienda digital con cuentas seleccionadas, detalles claros y
+          una experiencia de compra sin ruido. Encuentra tu próxima cuenta
+          en <strong>elgato.lol</strong>.
         </p>
 
-        <div class="home-hero-actions">
-          <a class="home-button home-button-primary" href="/tienda.html">
-            Explorar catálogo
-            <span aria-hidden="true">↗</span>
+        <div class="hero-actions">
+          <a class="liquid-button liquid-button-primary" href="/tienda.html">
+            Explorar catálogo <span aria-hidden="true">↗</span>
           </a>
 
-          <a class="home-button home-button-secondary" href="#como-funciona">
-            Cómo funciona
-            <span aria-hidden="true">↓</span>
+          <a class="liquid-button liquid-button-ghost" href="#destacados">
+            Ver destacados <span aria-hidden="true">↓</span>
           </a>
         </div>
 
-        <div class="home-benefits" aria-label="Características de Elgato.lol">
-          <div class="home-benefit">
-            <span class="benefit-check" aria-hidden="true">✓</span>
-            <span>Detalles visibles antes de elegir</span>
-          </div>
-
-          <div class="home-benefit">
-            <span class="benefit-check" aria-hidden="true">✓</span>
-            <span>Catálogo organizado por categorías</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Composición visual de la portada -->
-      <div class="home-hero-art" aria-label="Ejemplos de categorías de la tienda">
-        <div class="art-orbit art-orbit-a" aria-hidden="true"></div>
-        <div class="art-orbit art-orbit-b" aria-hidden="true"></div>
-
-        <div class="art-top-label">
-          <span class="art-live-dot"></span>
-          EXPLORA LA TIENDA
-          <span>01 — 03</span>
-        </div>
-
-        <a
-          class="showcase-card showcase-card-main"
-          href="/tienda.html"
-          aria-label="Explorar productos de entretenimiento"
-        >
-          <div class="showcase-main-image">
-            <img
-              src="/assets/netflix.jpg"
-              alt=""
-              fetchpriority="high"
-            >
-          </div>
-
-          <div class="showcase-main-shade"></div>
-
-          <div class="showcase-card-content">
-            <span class="showcase-tag">CATÁLOGO DIGITAL</span>
-
-            <strong>
-              Encuentra tu<br>
-              próxima cuenta.
-            </strong>
-
-            <span class="showcase-link">
-              Ver opciones <b aria-hidden="true">↗</b>
+        <div class="hero-proof-row">
+          <div class="proof-item">
+            <span class="proof-icon">✦</span>
+            <span>
+              <strong>Alta calidad</strong>
+              <small>Productos seleccionados</small>
             </span>
           </div>
 
-          <span class="showcase-index">ELG / 001</span>
-        </a>
+          <div class="proof-divider"></div>
 
-        <a
-          class="showcase-card showcase-card-small card-spotify"
-          href="/tienda.html"
-          aria-label="Explorar la tienda"
-        >
-          <img src="/assets/spotify.jpg" alt="" loading="lazy">
-
-          <span>
-            <small>CATEGORÍA</small>
-            <strong>Entretenimiento</strong>
-          </span>
-
-          <b class="small-card-arrow" aria-hidden="true">↗</b>
-        </a>
-
-        <a
-          class="showcase-card showcase-card-small card-chatgpt"
-          href="/tienda.html"
-          aria-label="Explorar la tienda"
-        >
-          <img src="/assets/chatgpt.jpg" alt="" loading="lazy">
-
-          <span>
-            <small>CATEGORÍA</small>
-            <strong>Productividad</strong>
-          </span>
-
-          <b class="small-card-arrow" aria-hidden="true">↗</b>
-        </a>
-
-        <div class="art-bottom-note">
-          <span class="art-bottom-icon">g.</span>
-
-          <span>
-            <strong>Elgato.lol</strong>
-            <small>Tu siguiente cuenta empieza aquí.</small>
-          </span>
-
-          <span class="art-bottom-arrow" aria-hidden="true">↗</span>
+          <div class="proof-item">
+            <span class="proof-icon proof-icon-purple">◈</span>
+            <span>
+              <strong>Compra clara</strong>
+              <small>Información por producto</small>
+            </span>
+          </div>
         </div>
       </div>
 
-      <div class="hero-bottom-line" aria-hidden="true">
-        <span>CUENTAS FULL</span>
-        <span>PRODUCTOS DIGITALES</span>
-        <span>ELGATO.LOL © <span id="hero-year"></span></span>
+      <div class="hero-visual" aria-label="Identidad visual de Elgato.lol">
+        <div class="visual-halo halo-one" aria-hidden="true"></div>
+        <div class="visual-halo halo-two" aria-hidden="true"></div>
+        <div class="visual-orbit orbit-one" aria-hidden="true"></div>
+        <div class="visual-orbit orbit-two" aria-hidden="true"></div>
+
+        <div class="visual-topline">
+          <span><b></b> DIGITAL GOODS</span>
+          <span>EST. ELGATO.LOL</span>
+        </div>
+
+        <div class="glass-emblem">
+          <div class="emblem-reflection" aria-hidden="true"></div>
+          <img
+            src="/assets/logo-hero.png"
+            alt="Logotipo neón de un gato coronado, símbolo de Elgato.lol"
+            fetchpriority="high"
+          >
+          <div class="emblem-ring ring-a" aria-hidden="true"></div>
+          <div class="emblem-ring ring-b" aria-hidden="true"></div>
+        </div>
+
+        <div class="visual-wordmark" aria-hidden="true">
+          elgato<span>.lol</span>
+        </div>
+
+        <div class="visual-caption">
+          <span class="caption-mark">g.</span>
+          <span>
+            <strong>ELGATO.LOL</strong>
+            <small>Tu próxima cuenta empieza aquí.</small>
+          </span>
+          <span class="caption-arrow">↗</span>
+        </div>
+
+        <div class="floating-chip chip-quality">
+          <span class="chip-spark">✧</span>
+          <span>
+            <small>NUESTRO ENFOQUE</small>
+            <strong>Calidad primero</strong>
+          </span>
+        </div>
+
+        <div class="floating-chip chip-digital">
+          <span class="chip-orb"></span>
+          <span>
+            <small>TODO EN UN LUGAR</small>
+            <strong>Catálogo digital</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="hero-scroll-cue">
+        <span class="scroll-line"></span>
+        <span>DESLIZA PARA EXPLORAR</span>
       </div>
     </section>
 
-    <!-- PROPUESTA DE VALOR -->
-    <section class="home-value-strip" aria-label="Ventajas de la tienda">
-      <div class="value-strip-item">
-        <span class="value-number">01</span>
+    <section class="glass-benefits" aria-label="Características de Elgato.lol">
+      <div class="benefit-cell">
+        <span class="benefit-index">01</span>
         <div>
-          <strong>Selección cuidada</strong>
-          <p>Una presentación clara de cada opción.</p>
+          <strong>Selecciona tu cuenta</strong>
+          <p>Explora las opciones del catálogo.</p>
         </div>
       </div>
 
-      <div class="value-strip-divider" aria-hidden="true"></div>
-
-      <div class="value-strip-item">
-        <span class="value-number">02</span>
+      <div class="benefit-cell">
+        <span class="benefit-index">02</span>
         <div>
-          <strong>Precios a la vista</strong>
-          <p>Revisa el precio antes de continuar.</p>
+          <strong>Revisa los detalles</strong>
+          <p>Conoce el producto antes de elegir.</p>
         </div>
       </div>
 
-      <div class="value-strip-divider" aria-hidden="true"></div>
-
-      <div class="value-strip-item">
-        <span class="value-number">03</span>
+      <div class="benefit-cell">
+        <span class="benefit-index">03</span>
         <div>
-          <strong>Compra sin vueltas</strong>
-          <p>Encuentra lo que buscas desde el catálogo.</p>
+          <strong>Continúa tu pedido</strong>
+          <p>Sigue el proceso que indica la tienda.</p>
         </div>
       </div>
     </section>
 
-    <!-- CATEGORÍAS -->
-    <section class="home-section home-categories" aria-labelledby="categories-title">
-      <div class="home-section-heading">
+    <section class="home-section section-categories" aria-labelledby="categories-title">
+      <div class="section-heading-row">
         <div>
-          <span class="home-section-label">ENCUENTRA TU CATEGORÍA</span>
-
+          <span class="section-kicker">ENCUENTRA TU ESPACIO</span>
           <h2 id="categories-title">
-            Lo que buscas,<br>
-            <span>en un solo lugar.</span>
+            Una tienda.<br>
+            <span>Más posibilidades.</span>
           </h2>
         </div>
 
         <p>
-          Entra al catálogo y explora las opciones disponibles.
-          Cada producto tiene su propia descripción y precio para
-          que sepas qué estás eligiendo.
+          Entra al catálogo, compara las opciones y encuentra lo que buscas.
+          Cada producto tiene su propia información y precio.
         </p>
       </div>
 
-      <div class="category-cards">
-        <a class="category-card category-entertainment" href="/tienda.html">
-          <div class="category-card-top">
-            <span class="category-number">01 / CATEGORÍA</span>
-            <span class="category-open" aria-hidden="true">↗</span>
-          </div>
-
-          <div class="category-image category-image-wide">
-            <img src="/assets/netflix.jpg" alt="" loading="lazy">
-          </div>
-
-          <div class="category-card-bottom">
-            <div>
-              <h3>Entretenimiento</h3>
-              <p>Cuentas y servicios digitales para tu tiempo libre.</p>
-            </div>
-            <span class="category-arrow" aria-hidden="true">↗</span>
-          </div>
+      <div class="liquid-category-grid">
+        <a class="liquid-category category-purple" href="/tienda.html">
+          <span class="category-overline">01 / DISCOVER</span>
+          <span class="category-symbol symbol-star" aria-hidden="true">✳</span>
+          <span class="category-title">Entretenimiento</span>
+          <span class="category-description">
+            Productos digitales para disfrutar tu tiempo libre.
+          </span>
+          <span class="category-go" aria-hidden="true">↗</span>
+          <div class="category-glow" aria-hidden="true"></div>
         </a>
 
-        <a class="category-card category-gaming" href="/tienda.html">
-          <div class="category-card-top">
-            <span class="category-number">02 / CATEGORÍA</span>
-            <span class="category-open" aria-hidden="true">↗</span>
-          </div>
-
-          <div class="category-image category-image-wide">
-            <img src="/assets/discord.jpg" alt="" loading="lazy">
-          </div>
-
-          <div class="category-card-bottom">
-            <div>
-              <h3>Gaming y comunidad</h3>
-              <p>Descubre las opciones disponibles en la tienda.</p>
-            </div>
-            <span class="category-arrow" aria-hidden="true">↗</span>
-          </div>
+        <a class="liquid-category category-blue" href="/tienda.html">
+          <span class="category-overline">02 / EXPLORE</span>
+          <span class="category-symbol symbol-cube" aria-hidden="true">◇</span>
+          <span class="category-title">Gaming & comunidad</span>
+          <span class="category-description">
+            Explora las opciones disponibles en la tienda.
+          </span>
+          <span class="category-go" aria-hidden="true">↗</span>
+          <div class="category-glow" aria-hidden="true"></div>
         </a>
 
-        <a class="category-card category-productivity" href="/tienda.html">
-          <div class="category-card-top">
-            <span class="category-number">03 / CATEGORÍA</span>
-            <span class="category-open" aria-hidden="true">↗</span>
-          </div>
-
-          <div class="category-image category-image-wide">
-            <img src="/assets/chatgpt.jpg" alt="" loading="lazy">
-          </div>
-
-          <div class="category-card-bottom">
-            <div>
-              <h3>Productividad</h3>
-              <p>Herramientas digitales para tus proyectos.</p>
-            </div>
-            <span class="category-arrow" aria-hidden="true">↗</span>
-          </div>
+        <a class="liquid-category category-lilac" href="/tienda.html">
+          <span class="category-overline">03 / CREATE</span>
+          <span class="category-symbol symbol-orbit" aria-hidden="true">◎</span>
+          <span class="category-title">Productividad</span>
+          <span class="category-description">
+            Herramientas digitales para tus proyectos.
+          </span>
+          <span class="category-go" aria-hidden="true">↗</span>
+          <div class="category-glow" aria-hidden="true"></div>
         </a>
       </div>
     </section>
 
-    <!-- PRODUCTOS CARGADOS DESDE LA API -->
-    <section class="home-section home-featured" id="catalogo" aria-labelledby="featured-title">
-      <div class="home-section-heading featured-heading">
+    <section class="home-section section-featured" id="destacados" aria-labelledby="featured-title">
+      <div class="section-heading-row featured-heading">
         <div>
-          <span class="home-section-label">UNA MIRADA AL CATÁLOGO</span>
-
+          <span class="section-kicker">EL CATÁLOGO DE ELGATO.LOL</span>
           <h2 id="featured-title">
-            Ofertas <span>destacadas.</span>
+            Destacados<span class="heading-period">.</span>
           </h2>
-
-          <p>Explora algunos de los productos disponibles en Elgato.lol.</p>
+          <p>Descubre algunos de los productos disponibles.</p>
         </div>
 
-        <a class="home-text-link" href="/tienda.html">
+        <a class="text-link" href="/tienda.html">
           Ver todo el catálogo <span aria-hidden="true">↗</span>
         </a>
       </div>
 
-      <div
-        id="featured-products"
-        class="product-grid home-product-grid"
-        aria-live="polite"
-      >
+      <div id="featured-products" class="product-grid home-product-grid" aria-live="polite">
         <div class="home-loading">
-          <span class="loading-pip"></span>
-          Cargando productos...
+          <span class="loading-orb"></span>
+          <span>Cargando productos del catálogo...</span>
         </div>
       </div>
     </section>
 
-    <!-- CÓMO FUNCIONA -->
-    <section class="home-how" id="como-funciona" aria-labelledby="how-title">
-      <div class="home-how-intro">
-        <span class="home-section-label">SIMPLE DESDE EL PRINCIPIO</span>
-
-        <h2 id="how-title">
-          Elige con calma.<br>
-          <span>Compra con claridad.</span>
+    <section class="home-section section-process" id="como-funciona" aria-labelledby="process-title">
+      <div class="process-intro">
+        <span class="section-kicker">DISEÑADO PARA SER CLARO</span>
+        <h2 id="process-title">
+          De explorar a elegir.<br>
+          <span>Sin complicaciones.</span>
         </h2>
-
         <p>
-          Queremos que encuentres la cuenta adecuada sin tener
-          que descifrar la tienda.
+          Una experiencia simple para descubrir los productos, leer sus
+          características y continuar con tu pedido.
         </p>
-
-        <a class="home-button home-button-primary" href="/tienda.html">
-          Ir al catálogo <span aria-hidden="true">↗</span>
+        <a href="/como-funciona.html" class="text-link">
+          Cómo funciona la tienda <span aria-hidden="true">↗</span>
         </a>
       </div>
 
-      <div class="home-how-steps">
-        <article class="how-step-card">
-          <span class="how-step-number">01</span>
+      <div class="process-glass-list">
+        <article class="process-glass-item">
+          <span class="process-num">01</span>
           <div>
-            <h3>Explora</h3>
-            <p>Entra al catálogo y revisa las categorías disponibles.</p>
+            <h3>Explora el catálogo</h3>
+            <p>Revisa las categorías y encuentra opciones que te interesen.</p>
           </div>
-          <span class="how-step-symbol" aria-hidden="true">⌕</span>
+          <span class="process-arrow" aria-hidden="true">⌕</span>
         </article>
 
-        <article class="how-step-card">
-          <span class="how-step-number">02</span>
+        <article class="process-glass-item">
+          <span class="process-num">02</span>
           <div>
-            <h3>Revisa los detalles</h3>
-            <p>Lee la descripción, las características y el precio del producto.</p>
+            <h3>Lee cada detalle</h3>
+            <p>Consulta la descripción, las características y el precio.</p>
           </div>
-          <span class="how-step-symbol" aria-hidden="true">↗</span>
+          <span class="process-arrow" aria-hidden="true">◌</span>
         </article>
 
-        <article class="how-step-card">
-          <span class="how-step-number">03</span>
+        <article class="process-glass-item">
+          <span class="process-num">03</span>
           <div>
             <h3>Continúa con tu pedido</h3>
-            <p>Añade la opción elegida al carrito y sigue las indicaciones de compra.</p>
+            <p>Añade el producto al carrito y sigue las instrucciones de compra.</p>
           </div>
-          <span class="how-step-symbol" aria-hidden="true">✓</span>
+          <span class="process-arrow" aria-hidden="true">↗</span>
         </article>
       </div>
     </section>
 
-    <!-- CTA FINAL -->
-    <section class="home-final-cta" aria-labelledby="final-cta-title">
-      <div class="cta-mark" aria-hidden="true">g<span>.</span></div>
+    <section class="home-final-panel">
+      <div class="final-panel-glow" aria-hidden="true"></div>
 
-      <div>
-        <span class="home-section-label">TU PRÓXIMA CUENTA TE ESPERA</span>
-        <h2 id="final-cta-title">Empieza por el catálogo.</h2>
-        <p>Revisa las opciones disponibles y encuentra la que buscas.</p>
+      <div class="final-brand-orb" aria-hidden="true">
+        <img src="/assets/icon-cat.svg" alt="">
       </div>
 
-      <a class="home-button home-button-light" href="/tienda.html">
-        Explorar tienda <span aria-hidden="true">↗</span>
+      <div class="final-panel-copy">
+        <span class="section-kicker">LA SIGUIENTE PARADA: EL CATÁLOGO</span>
+        <h2>Encuentra tu próxima cuenta.</h2>
+        <p>Explora Elgato.lol y elige con la información a la vista.</p>
+      </div>
+
+      <a class="liquid-button liquid-button-primary" href="/tienda.html">
+        Entrar a la tienda <span aria-hidden="true">↗</span>
       </a>
     </section>
+
   </main>
 
-  <!-- El pie de página lo genera app.js -->
   <div id="site-footer"></div>
-
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script>
-    document.getElementById("hero-year").textContent =
-      new Date().getFullYear();
-  </script>
-
+  <script src="/home-effects.js" defer></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
